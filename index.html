@@ -713,6 +713,22 @@
         flex: 1;
       }
     }
+
+    /* Rodapé discreto no canto inferior direito */
+    .site-footer {
+      max-width: 1360px;
+      margin: 14px auto 0;
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 6px 12px;
+    }
+
+    .copyright-notice {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
@@ -910,6 +926,11 @@
       </div>
     </section>
   </main>
+
+  <!-- Rodapé discreto no canto inferior direito com copyright -->
+  <footer class="site-footer">
+    <span class="copyright-notice">&copy; 2026 MigzuLCS. Todos os direitos reservados.</span>
+  </footer>
 
   <script src="game_data.js"></script>
   <script>
