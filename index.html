@@ -2805,7 +2805,7 @@
         startY: 0,
         dist: 0,
         stopStart: 0,
-        stopDuration: 820,
+        stopDuration: 2200,
         cycleHeight: 0
       },
       {
@@ -2821,7 +2821,7 @@
         startY: 0,
         dist: 0,
         stopStart: 0,
-        stopDuration: 820,
+        stopDuration: 2200,
         cycleHeight: 0
       },
       {
@@ -2837,7 +2837,7 @@
         startY: 0,
         dist: 0,
         stopStart: 0,
-        stopDuration: 820,
+        stopDuration: 2200,
         cycleHeight: 0
       }
     ];
@@ -3027,9 +3027,9 @@
       // Item centralizado na payline de 90px (viewport de 180px com itens de 60px)
       reel.targetOffset = ((winIdx - 1 + items.length) % items.length) * 60;
 
-      // Gera 6 repetições para garantir continuidade infinita e parada fluida sem salto
+      // Gera 8 repetições para garantir continuidade infinita e parada fluida sem salto
       let fullList = [];
-      for (let rep = 0; rep < 6; rep++) {
+      for (let rep = 0; rep < 8; rep++) {
         fullList = fullList.concat(items);
       }
 
@@ -3146,16 +3146,16 @@
       const currentYInCycle = ((reel.y % H) + H) % H;
       const targetOffset = reel.targetOffset;
 
-      // Distância para alinhar com o item vencedor (passando cerca de 8 a 10 itens na desaceleração rápida)
+      // Distância para desaceleração suave de ~2.2s (passando cerca de 14 a 18 itens na leitura)
       let dist = (targetOffset - currentYInCycle + H) % H;
-      while (dist < 480) {
+      while (dist < 840) {
         dist += H;
       }
 
       reel.startY = reel.y;
       reel.dist = dist;
       reel.stopStart = performance.now();
-      reel.stopDuration = 820; // Desaceleração rápida e responsiva (~0.82s)
+      reel.stopDuration = 2200; // Desaceleração suave de 2.2s com tensão e leitura dos nomes
       reel.state = 'stopping';
     }
 
@@ -3181,8 +3181,10 @@
           const elapsed = now - reel.stopStart;
           const progress = Math.min(1, elapsed / reel.stopDuration);
 
-          // Curva de desaceleração suave e rápida
-          const ease = 1 - Math.pow(1 - progress, 3.2);
+          // Curva de desaceleração que permite ler os nomes passando e gera tensão:
+          // Início com boa velocidade e os últimos 1.2 segundos desaceleram suavemente
+          // permitindo ler claramente os últimos 3-4 itens passando pela payline
+          const ease = 1 - Math.pow(1 - progress, 2.6);
           const currentY = reel.startY + reel.dist * ease;
           reel.y = currentY;
           reel.stripEl.style.transform = `translateY(${-currentY}px)`;
@@ -3337,15 +3339,24 @@
         if (slotMachineStep === 'can_stop_console') {
           delay = 48; // rápido, 3 bobinas girando
         } else if (slotMachineStep === 'stopping_console') {
-          delay = 78;
+          // Bobina 1 desacelerando em 2.2s com tensão de leitura
+          const elapsed = performance.now() - slotReels[0].stopStart;
+          const p = Math.min(1, elapsed / slotReels[0].stopDuration);
+          delay = 50 + Math.pow(p, 1.8) * 230; // 50ms até 280ms
         } else if (slotMachineStep === 'can_stop_game') {
-          delay = 62; // 2 bobinas girando
+          delay = 58; // 2 bobinas girando
         } else if (slotMachineStep === 'stopping_game') {
-          delay = 92;
+          // Bobina 2 desacelerando em 2.2s com tensão de leitura
+          const elapsed = performance.now() - slotReels[1].stopStart;
+          const p = Math.min(1, elapsed / slotReels[1].stopDuration);
+          delay = 60 + Math.pow(p, 1.8) * 240; // 60ms até 300ms
         } else if (slotMachineStep === 'can_stop_duration') {
-          delay = 74; // 1 bobina girando
+          delay = 70; // 1 bobina girando
         } else if (slotMachineStep === 'stopping_duration') {
-          delay = 125;
+          // Bobina 3 desacelerando em 2.2s com tensão de leitura
+          const elapsed = performance.now() - slotReels[2].stopStart;
+          const p = Math.min(1, elapsed / slotReels[2].stopDuration);
+          delay = 70 + Math.pow(p, 1.8) * 260; // 70ms até 330ms
         }
         slotTickerTimeout = setTimeout(scheduleSlotTick, delay);
       }
