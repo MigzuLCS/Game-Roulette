@@ -727,6 +727,472 @@
       }
     }
 
+    /* =========================================================================
+       ESTILOS DA GAME SLOT MACHINE (REELS, ALAVANCA MECÂNICA E COINS)
+       ========================================================================= */
+    .slot-machine-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .slot-machine-cabinet {
+      position: relative;
+      width: 100%;
+      background: var(--surface);
+      border: 2.5px solid #0f172a;
+      border-radius: 20px;
+      padding: 24px 20px 20px;
+      box-shadow: 0 8px 0 #0f172a, 0 16px 28px rgba(15, 23, 42, 0.12);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* Marquee Superior Oval */
+    .slot-marquee-oval {
+      border: 2.5px solid #0f172a;
+      border-radius: 999px;
+      padding: 8px 34px;
+      background: #ffffff;
+      box-shadow: 0 3.5px 0 #0f172a;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slot-marquee-text {
+      font-family: 'Silkscreen', 'Pixelify Sans', monospace;
+      font-size: clamp(16px, 2.8vw, 24px);
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
+    /* Área central das bobinas + alavanca */
+    .slot-middle-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding-right: 28px; /* Espaço para a alavanca */
+    }
+
+    .slot-reels-container {
+      position: relative;
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 620px;
+      justify-content: space-between;
+    }
+
+    /* Indicadores de Linha de Pagamento (Payline) */
+    .slot-payline-bar {
+      position: absolute;
+      top: calc(50% + 15px);
+      left: -4px;
+      right: -4px;
+      height: 60px;
+      transform: translateY(-50%);
+      pointer-events: none;
+      z-index: 5;
+      border-top: 1.5px dashed rgba(202, 138, 4, 0.6);
+      border-bottom: 1.5px dashed rgba(202, 138, 4, 0.6);
+      background: rgba(254, 240, 138, 0.08);
+    }
+
+    .slot-payline-marker {
+      position: absolute;
+      top: calc(50% + 15px);
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #ca8a04;
+      z-index: 8;
+      pointer-events: none;
+      font-weight: 900;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .slot-payline-marker.left {
+      left: -14px;
+    }
+
+    .slot-payline-marker.right {
+      right: -14px;
+    }
+
+    /* Bobinas (Reels) individuais */
+    .slot-reel-box {
+      flex: 1;
+      min-width: 0;
+      border: 2px solid #0f172a;
+      border-radius: 14px;
+      background: #f8fafc;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 0 #0f172a;
+      transition: transform 0.15s ease-out;
+    }
+
+    .slot-reel-box.reel-snap {
+      animation: reelSnapBounce 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes reelSnapBounce {
+      0% { transform: translateY(0); }
+      40% { transform: translateY(4px); }
+      100% { transform: translateY(0); }
+    }
+
+    .slot-reel-header {
+      padding: 7px 4px;
+      font-family: 'Silkscreen', monospace;
+      font-size: clamp(11px, 1.8vw, 13px);
+      font-weight: 700;
+      text-align: center;
+      color: #ffffff;
+      background: #1e293b;
+      border-bottom: 2px solid #0f172a;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .slot-reel-viewport {
+      position: relative;
+      height: 180px; /* 3 itens de 60px */
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .slot-cylinder-shadow-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.15) 60%, transparent 100%);
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    .slot-cylinder-shadow-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: linear-gradient(to top, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.15) 60%, transparent 100%);
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    .slot-reel-strip {
+      display: flex;
+      flex-direction: column;
+      transform: translateY(0);
+      will-change: transform;
+    }
+
+    .slot-reel-item {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      text-align: center;
+      font-family: 'Silkscreen', 'Pixelify Sans', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.18;
+      color: #0f172a;
+      user-select: none;
+      border-bottom: 1px dashed rgba(15, 23, 42, 0.08);
+      word-break: normal;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .slot-reel-item.duration-item {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .slot-reel-footer-bevel {
+      height: 12px;
+      background: #e2e8f0;
+      border-top: 1.5px solid #cbd5e1;
+    }
+
+    /* Alavanca Mecânica Lateral (Arm + Knob + Pivot) */
+    .slot-lever-assembly {
+      position: absolute;
+      right: -24px;
+      top: 15px;
+      width: 50px;
+      height: 180px;
+      cursor: pointer;
+      user-select: none;
+      z-index: 10;
+    }
+
+    .slot-lever-socket {
+      position: absolute;
+      bottom: 18px;
+      left: 0;
+      width: 22px;
+      height: 16px;
+      background: #334155;
+      border: 2px solid #0f172a;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .slot-lever-arm {
+      position: absolute;
+      bottom: 24px;
+      left: 8px;
+      width: 28px;
+      height: 140px;
+      transform-origin: 3px 132px;
+      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .slot-lever-arm.pulled {
+      transform: rotate(62deg) scaleY(0.85);
+      transition: transform 0.1s ease-in;
+    }
+
+    .slot-lever-shaft {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 6px;
+      height: 124px;
+      background: linear-gradient(to right, #e2e8f0, #94a3b8, #64748b);
+      border: 1.5px solid #0f172a;
+      border-radius: 3px;
+    }
+
+    .slot-lever-knob {
+      position: absolute;
+      top: 0;
+      left: -14px;
+      width: 34px;
+      height: 34px;
+      background: radial-gradient(circle at 35% 35%, #ef4444, #991b1b 80%);
+      border: 2px solid #0f172a;
+      border-radius: 50%;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      transition: transform 0.1s;
+    }
+
+    .slot-lever-assembly:hover .slot-lever-knob {
+      transform: scale(1.08);
+    }
+
+    /* Área de Moedas Que Saltam (Canvas) */
+    .slot-coins-stage {
+      position: relative;
+      width: 100%;
+      height: 90px;
+      margin-top: -15px;
+      margin-bottom: -15px;
+      pointer-events: none;
+      z-index: 9;
+    }
+
+    .slot-coins-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Painel de Exibição do Resultado */
+    .slot-display-panel {
+      width: 100%;
+      max-width: 620px;
+      border: 2px solid #0f172a;
+      border-radius: 12px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 12px 18px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.5), 0 3px 0 #0f172a;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .slot-display-panel.winner-glow {
+      border-color: #eab308;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.5), 0 0 16px rgba(234, 179, 8, 0.4), 0 3px 0 #0f172a;
+    }
+
+    .slot-display-placeholder {
+      font-family: 'Silkscreen', monospace;
+      font-size: 13px;
+      color: #94a3b8;
+      letter-spacing: 0.08em;
+    }
+
+    .slot-result-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .slot-result-tags {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: 'Silkscreen', 'Pixelify Sans', monospace;
+      font-size: clamp(12px, 1.8vw, 15px);
+      color: #f8fafc;
+    }
+
+    .slot-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.08);
+      letter-spacing: 0.04em;
+    }
+
+    .slot-tag-console {
+      border-color: #38bdf8;
+      color: #e0f2fe;
+    }
+
+    .slot-tag-game {
+      border-color: #a78bfa;
+      color: #f5f3ff;
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .slot-tag-duration {
+      background: #eab308;
+      border-color: #facc15;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .btn-slot-apply {
+      background: #ffffff;
+      color: #0f172a;
+      border: 1.5px solid #0f172a;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.1s, background-color 0.15s;
+      box-shadow: 0 2px 0 #0f172a;
+      margin-top: 2px;
+    }
+
+    .btn-slot-apply:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-slot-apply:active {
+      transform: translateY(1px);
+    }
+
+    /* Bandeja Inferior de Moedas (Coin Tray) */
+    .slot-bottom-tray {
+      width: 150px;
+      height: 44px;
+      border: 2px solid #0f172a;
+      border-radius: 10px;
+      background: #e2e8f0;
+      box-shadow: inset 0 4px 6px rgba(0,0,0,0.25), 0 2px 0 #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+
+    .slot-bottom-tray:hover {
+      background: #cbd5e1;
+    }
+
+    .slot-tray-pocket {
+      width: 80%;
+      height: 18px;
+      background: #94a3b8;
+      border-radius: 6px;
+      border: 1.5px solid #475569;
+      box-shadow: inset 0 3px 5px rgba(0,0,0,0.4);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slot-tray-pocket::after {
+      content: '🪙 🪙 🪙';
+      font-size: 11px;
+      letter-spacing: -2px;
+    }
+
+    /* Botão de Giro Abaixo da Slot Machine */
+    .btn-spin-slot {
+      background: #0f172a;
+      max-width: 620px;
+      margin-top: 4px;
+    }
+
+    .btn-spin-slot:hover:not(:disabled) {
+      background: #1e293b;
+    }
+
+    @media (max-width: 680px) {
+      .slot-middle-row {
+        padding-right: 18px;
+      }
+      .slot-lever-assembly {
+        right: -14px;
+      }
+      .slot-reels-container {
+        gap: 6px;
+      }
+      .slot-reel-item {
+        font-size: 11px;
+        padding: 2px 4px;
+      }
+      .slot-payline-marker {
+        display: none;
+      }
+    }
+
     /* Rodapé discreto no canto inferior direito */
     .site-footer {
       max-width: 1360px;
@@ -936,6 +1402,102 @@
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ETAPA 3: GAME SLOT MACHINE (CONSOLES, JOGOS E DURAÇÃO) -->
+    <section class="roulette-section" id="slotMachineSection">
+      <div class="section-head">
+        <div class="section-title">3. Game Slot Machine</div>
+        <div class="section-status" id="slotStatus">Puxe a alavanca ou clique no botão para girar!</div>
+      </div>
+
+      <div class="slot-machine-wrapper">
+        <!-- O GABINETE DA SLOT MACHINE -->
+        <div class="slot-machine-cabinet wobbly-filter" id="slotCabinet">
+          
+          <!-- MARQUEE SUPERIOR OVAL (EXATAMENTE COMO NO DESENHO) -->
+          <div class="slot-marquee-oval">
+            <span class="slot-marquee-text">GAME SLOT MACHINE</span>
+          </div>
+
+          <!-- ÁREA DAS 3 BOBINAS (REELS) COM A ALAVANCA AO LADO -->
+          <div class="slot-middle-row">
+            <div class="slot-reels-container">
+              <!-- LINHA GUIA CENTRAL (PAYLINE) COM MARCADORES EM DIAMANTE -->
+              <div class="slot-payline-marker left">◆</div>
+              <div class="slot-payline-marker right">◆</div>
+              <div class="slot-payline-bar"></div>
+
+              <!-- BOBINA 1: CONSOLE -->
+              <div class="slot-reel-box" id="reelBoxConsole">
+                <div class="slot-reel-header">Console</div>
+                <div class="slot-reel-viewport">
+                  <div class="slot-cylinder-shadow-top"></div>
+                  <div class="slot-reel-strip" id="reelStripConsole"></div>
+                  <div class="slot-cylinder-shadow-bottom"></div>
+                </div>
+                <div class="slot-reel-footer-bevel"></div>
+              </div>
+
+              <!-- BOBINA 2: JOGO -->
+              <div class="slot-reel-box" id="reelBoxGame">
+                <div class="slot-reel-header">Jogo</div>
+                <div class="slot-reel-viewport">
+                  <div class="slot-cylinder-shadow-top"></div>
+                  <div class="slot-reel-strip" id="reelStripGame"></div>
+                  <div class="slot-cylinder-shadow-bottom"></div>
+                </div>
+                <div class="slot-reel-footer-bevel"></div>
+              </div>
+
+              <!-- BOBINA 3: DURAÇÃO -->
+              <div class="slot-reel-box" id="reelBoxDuration">
+                <div class="slot-reel-header">Duração</div>
+                <div class="slot-reel-viewport">
+                  <div class="slot-cylinder-shadow-top"></div>
+                  <div class="slot-reel-strip" id="reelStripDuration"></div>
+                  <div class="slot-cylinder-shadow-bottom"></div>
+                </div>
+                <div class="slot-reel-footer-bevel"></div>
+              </div>
+            </div>
+
+            <!-- ALAVANCA LATERAL DIREITA INTERATIVA (COM BOLA E HASTE) -->
+            <div class="slot-lever-assembly" id="slotLeverAssembly" title="Puxe a alavanca para sortear!">
+              <div class="slot-lever-socket"></div>
+              <div class="slot-lever-arm" id="slotLeverArm">
+                <div class="slot-lever-shaft"></div>
+                <div class="slot-lever-knob"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ÁREA INTERMEDIÁRIA: MOEDAS QUE SALTAM (CANVAS DE PARTÍCULAS) -->
+          <div class="slot-coins-stage">
+            <canvas id="slotCoinsCanvas" class="slot-coins-canvas" width="680" height="150"></canvas>
+          </div>
+
+          <!-- BARRA DE EXIBIÇÃO DO RESULTADO (PAINEL HORIZONTAL ARREDONDADO) -->
+          <div class="slot-display-panel" id="slotDisplayPanel">
+            <div class="slot-result-content" id="slotDisplayText">
+              <span class="slot-display-placeholder">PUXE A ALAVANCA PARA SORTEAR</span>
+            </div>
+          </div>
+
+          <!-- BANDEJA INFERIOR DE MOEDAS (COIN TRAY) -->
+          <div class="slot-bottom-tray" id="slotBottomTray" title="Bandeja de moedas (clique para saltar moedas!)">
+            <div class="slot-tray-pocket"></div>
+          </div>
+
+        </div>
+
+        <!-- BOTÃO ACESSÍVEL / ELEGANTE PARA GIRAR A SLOT MACHINE -->
+        <button id="btnSpinSlot" class="btn btn-spin btn-spin-slot wobbly-filter">
+          Puxar Alavanca / Girar Slot Machine
+        </button>
       </div>
     </section>
   </main>
@@ -1999,7 +2561,9 @@
         document.getElementById('wheelWrapperConsole'),
         document.getElementById('wheelWrapperGame'),
         document.getElementById('spin'),
-        document.getElementById('gameSpin')
+        document.getElementById('gameSpin'),
+        document.getElementById('slotCabinet'),
+        document.getElementById('btnSpinSlot')
       ];
       wElements.forEach(el => {
         if (el) {
@@ -2060,12 +2624,416 @@
       drawGames();
       render();
       renderGameList();
+      resetSlotMachine();
     };
+
+    // =========================================================================
+    // ETAPA 3: GAME SLOT MACHINE (BOBINAS, ALAVANCA MECÂNICA E FÍSICA DE MOEDAS)
+    // =========================================================================
+    const DURATION_OPTIONS = [
+      '30min',
+      '1hr',
+      '10hr',
+      '20hr',
+      'até zerar',
+      '100%'
+    ];
+
+    let slotBusy = false;
+    let slotTickerInterval = null;
+    let slotCoins = [];
+    let slotCoinsAnimId = null;
+
+    // Inicialização das bobinas com itens visíveis iniciais
+    function initSlotMachine() {
+      // 1. Bobina Console
+      const stripConsole = document.getElementById('reelStripConsole');
+      if (stripConsole) {
+        const initialConsoles = ['Game Boy', 'SNES', 'PlayStation'];
+        stripConsole.innerHTML = initialConsoles.map(name => `<div class="slot-reel-item">${name}</div>`).join('');
+        stripConsole.style.transform = 'translateY(0px)';
+      }
+
+      // 2. Bobina Jogo
+      const stripGame = document.getElementById('reelStripGame');
+      if (stripGame) {
+        const initialGames = ['Super Mario Bros. 3', 'Super Mario World', 'Castlevania: Symphony of the Night'];
+        stripGame.innerHTML = initialGames.map(name => `<div class="slot-reel-item">${name}</div>`).join('');
+        stripGame.style.transform = 'translateY(0px)';
+      }
+
+      // 3. Bobina Duração
+      const stripDuration = document.getElementById('reelStripDuration');
+      if (stripDuration) {
+        const initialDurations = ['30min', '10hr', 'até zerar'];
+        stripDuration.innerHTML = initialDurations.map(dur => `<div class="slot-reel-item duration-item">${dur}</div>`).join('');
+        stripDuration.style.transform = 'translateY(0px)';
+      }
+
+      // Ajusta tamanho do canvas de moedas
+      resizeSlotCoinsCanvas();
+      window.addEventListener('resize', resizeSlotCoinsCanvas);
+    }
+
+    function resizeSlotCoinsCanvas() {
+      const canvas = document.getElementById('slotCoinsCanvas');
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        canvas.width = Math.round(rect.width * (window.devicePixelRatio || 1));
+        canvas.height = Math.round(rect.height * (window.devicePixelRatio || 1));
+      }
+    }
+
+    // ==================== FÍSICA DAS MOEDAS QUE SALTAM ====================
+    function spawnSlotCoins(count = 28) {
+      const canvas = document.getElementById('slotCoinsCanvas');
+      if (!canvas) return;
+      const w = canvas.width;
+      const h = canvas.height;
+      const dpr = window.devicePixelRatio || 1;
+      const originX = w * 0.5;
+      const originY = h * 0.78;
+
+      for (let i = 0; i < count; i++) {
+        const spread = (Math.random() - 0.5) * 1.5;
+        const angle = -Math.PI * 0.5 + spread;
+        const speed = (6.5 + Math.random() * 8.5) * dpr;
+        slotCoins.push({
+          x: originX + (Math.random() - 0.5) * (w * 0.35),
+          y: originY + (Math.random() - 0.5) * (15 * dpr),
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          gravity: 0.38 * dpr,
+          radius: (7 + Math.random() * 3.5) * dpr,
+          rot: Math.random() * Math.PI,
+          rotSpeed: (Math.random() - 0.5) * 0.35,
+          bounces: 0,
+          maxBounces: 2 + Math.floor(Math.random() * 3),
+          life: 1.0,
+          decay: 0.006 + Math.random() * 0.005
+        });
+      }
+
+      if (!slotCoinsAnimId) {
+        slotCoinsAnimId = requestAnimationFrame(updateSlotCoins);
+      }
+    }
+
+    function updateSlotCoins() {
+      const canvas = document.getElementById('slotCoinsCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      const dpr = window.devicePixelRatio || 1;
+      const floorY = h - (12 * dpr);
+
+      ctx.clearRect(0, 0, w, h);
+
+      for (let i = slotCoins.length - 1; i >= 0; i--) {
+        const c = slotCoins[i];
+        c.vy += c.gravity;
+        c.x += c.vx;
+        c.y += c.vy;
+        c.rot += c.rotSpeed;
+
+        if (c.y >= floorY) {
+          c.y = floorY;
+          c.vy = -c.vy * 0.52;
+          c.vx *= 0.82;
+          c.bounces++;
+          if (c.bounces <= 2 && Math.random() < 0.25) {
+            beep(1200 + Math.random() * 400, 0.02, 'sine');
+          }
+        }
+
+        if (c.bounces >= c.maxBounces) {
+          c.life -= c.decay * 3.5;
+        } else {
+          c.life -= c.decay;
+        }
+
+        if (c.life <= 0) {
+          slotCoins.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, c.life));
+        ctx.translate(c.x, c.y);
+        const scaleX = Math.cos(c.rot);
+        ctx.scale(scaleX, 1);
+
+        // Corpo da moeda dourada
+        ctx.beginPath();
+        ctx.arc(0, 0, c.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#facc15';
+        ctx.fill();
+        ctx.lineWidth = 1.8 * dpr;
+        ctx.strokeStyle = '#0f172a';
+        ctx.stroke();
+
+        // Detalhe interno da moeda
+        if (Math.abs(scaleX) > 0.35) {
+          ctx.beginPath();
+          ctx.arc(0, 0, c.radius * 0.65, 0, Math.PI * 2);
+          ctx.lineWidth = 1 * dpr;
+          ctx.strokeStyle = '#ca8a04';
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      if (slotCoins.length > 0) {
+        slotCoinsAnimId = requestAnimationFrame(updateSlotCoins);
+      } else {
+        slotCoinsAnimId = null;
+      }
+    }
+
+    // ==================== GIRO DA SLOT MACHINE ====================
+    function spinSlotMachine() {
+      if (slotBusy) return;
+      slotBusy = true;
+      getAudioCtx();
+
+      // Desabilita botão
+      const btn = document.getElementById('btnSpinSlot');
+      if (btn) btn.disabled = true;
+
+      // Animação mecânica da alavanca com puxada e som
+      const arm = document.getElementById('slotLeverArm');
+      if (arm) {
+        arm.classList.add('pulled');
+        beep(160, 0.08, 'sawtooth');
+        setTimeout(() => beep(110, 0.12, 'triangle'), 60);
+
+        setTimeout(() => {
+          arm.classList.remove('pulled');
+        }, 220);
+      }
+
+      // Moedas saltam logo ao acionar a máquina! (conforme demonstrado no desenho)
+      spawnSlotCoins(22);
+
+      // Atualiza o painel de status
+      const displayPanel = document.getElementById('slotDisplayPanel');
+      const displayText = document.getElementById('slotDisplayText');
+      if (displayPanel) displayPanel.classList.remove('winner-glow');
+      if (displayText) {
+        displayText.innerHTML = '<span class="slot-display-placeholder">GIRANDO BOBINAS...</span>';
+      }
+
+      // 1. Sorteia o Console vencedor
+      let activeConsoles = ALL_CONSOLES.filter(c => enabledConsoleNames.has(c.name));
+      if (activeConsoles.length === 0) activeConsoles = ALL_CONSOLES;
+      const winConsole = activeConsoles[Math.floor(Math.random() * activeConsoles.length)];
+
+      // 2. Sorteia o Jogo vencedor pertencente a esse console
+      const consoleGames = (window.GAME_DATA && window.GAME_DATA[winConsole.name]) || [];
+      const winGame = consoleGames.length > 0 
+        ? consoleGames[Math.floor(Math.random() * consoleGames.length)] 
+        : { name: 'Jogo Clássico' };
+
+      // 3. Sorteia a Duração vencedora (dentre as 6 opções solicitadas)
+      const winDuration = DURATION_OPTIONS[Math.floor(Math.random() * DURATION_OPTIONS.length)];
+
+      // Inicia ticks mecânicos rítmicos de rotação
+      let tickCount = 0;
+      clearInterval(slotTickerInterval);
+      slotTickerInterval = setInterval(() => {
+        tickCount++;
+        beep(560 + Math.random() * 180, 0.015, 'triangle');
+        if (tickCount > 35) clearInterval(slotTickerInterval);
+      }, 75);
+
+      // --- CONFIGURAÇÃO DA BOBINA 1 (CONSOLE) ---
+      const stripConsole = document.getElementById('reelStripConsole');
+      const boxConsole = document.getElementById('reelBoxConsole');
+      const countConsole = 26;
+      const consoleItems = [];
+      for (let i = 0; i < countConsole; i++) {
+        if (i === countConsole - 2) {
+          consoleItems.push(winConsole.name);
+        } else {
+          const randC = ALL_CONSOLES[Math.floor(Math.random() * ALL_CONSOLES.length)];
+          consoleItems.push(randC.name);
+        }
+      }
+      stripConsole.innerHTML = consoleItems.map(name => `<div class="slot-reel-item">${name}</div>`).join('');
+      stripConsole.style.transition = 'none';
+      stripConsole.style.transform = 'translateY(0px)';
+      void stripConsole.offsetWidth;
+
+      // --- CONFIGURAÇÃO DA BOBINA 2 (JOGO) ---
+      const stripGame = document.getElementById('reelStripGame');
+      const boxGame = document.getElementById('reelBoxGame');
+      const countGame = 34;
+      const gameItems = [];
+      for (let i = 0; i < countGame; i++) {
+        if (i === countGame - 2) {
+          gameItems.push(winGame.name);
+        } else {
+          if (consoleGames.length > 0) {
+            const randG = consoleGames[Math.floor(Math.random() * consoleGames.length)];
+            gameItems.push(randG.name);
+          } else {
+            gameItems.push('Jogo Clássico');
+          }
+        }
+      }
+      stripGame.innerHTML = gameItems.map(name => `<div class="slot-reel-item">${name}</div>`).join('');
+      stripGame.style.transition = 'none';
+      stripGame.style.transform = 'translateY(0px)';
+      void stripGame.offsetWidth;
+
+      // --- CONFIGURAÇÃO DA BOBINA 3 (DURAÇÃO) ---
+      const stripDuration = document.getElementById('reelStripDuration');
+      const boxDuration = document.getElementById('reelBoxDuration');
+      const countDuration = 42;
+      const durationItems = [];
+      for (let i = 0; i < countDuration; i++) {
+        if (i === countDuration - 2) {
+          durationItems.push(winDuration);
+        } else {
+          const randD = DURATION_OPTIONS[Math.floor(Math.random() * DURATION_OPTIONS.length)];
+          durationItems.push(randD);
+        }
+      }
+      stripDuration.innerHTML = durationItems.map(dur => `<div class="slot-reel-item duration-item">${dur}</div>`).join('');
+      stripDuration.style.transition = 'none';
+      stripDuration.style.transform = 'translateY(0px)';
+      void stripDuration.offsetWidth;
+
+      // Executa giros com desaceleração escalonada (1.9s, 2.6s, 3.3s)
+      const DURATION_REEL_1 = 1900;
+      const DURATION_REEL_2 = 2600;
+      const DURATION_REEL_3 = 3300;
+
+      const targetYConsole = -((countConsole - 2 - 1) * 60);
+      const targetYGame = -((countGame - 2 - 1) * 60);
+      const targetYDuration = -((countDuration - 2 - 1) * 60);
+
+      stripConsole.style.transition = `transform ${DURATION_REEL_1}ms cubic-bezier(0.12, 0.8, 0.15, 1.04)`;
+      stripConsole.style.transform = `translateY(${targetYConsole}px)`;
+
+      stripGame.style.transition = `transform ${DURATION_REEL_2}ms cubic-bezier(0.12, 0.8, 0.15, 1.04)`;
+      stripGame.style.transform = `translateY(${targetYGame}px)`;
+
+      stripDuration.style.transition = `transform ${DURATION_REEL_3}ms cubic-bezier(0.12, 0.8, 0.15, 1.04)`;
+      stripDuration.style.transform = `translateY(${targetYDuration}px)`;
+
+      // Parada da Bobina 1 (Console)
+      setTimeout(() => {
+        beep(220, 0.08, 'square');
+        if (boxConsole) {
+          boxConsole.classList.remove('reel-snap');
+          void boxConsole.offsetWidth;
+          boxConsole.classList.add('reel-snap');
+        }
+        spawnSlotCoins(6);
+      }, DURATION_REEL_1);
+
+      // Parada da Bobina 2 (Jogo)
+      setTimeout(() => {
+        beep(330, 0.08, 'square');
+        if (boxGame) {
+          boxGame.classList.remove('reel-snap');
+          void boxGame.offsetWidth;
+          boxGame.classList.add('reel-snap');
+        }
+        spawnSlotCoins(8);
+      }, DURATION_REEL_2);
+
+      // Parada da Bobina 3 (Duração) e Finalização
+      setTimeout(() => {
+        clearInterval(slotTickerInterval);
+        beep(440, 0.1, 'square');
+        if (boxDuration) {
+          boxDuration.classList.remove('reel-snap');
+          void boxDuration.offsetWidth;
+          boxDuration.classList.add('reel-snap');
+        }
+
+        // Fanfarra triunfal
+        beep(523, 0.09, 'sine');
+        setTimeout(() => beep(659, 0.09, 'sine'), 80);
+        setTimeout(() => beep(783, 0.12, 'sine'), 160);
+        setTimeout(() => beep(1046, 0.22, 'sine'), 250);
+
+        // Grande explosão de moedas saltando!
+        spawnSlotCoins(36);
+
+        // Exibe o resultado final com botão para carregar na roleta
+        if (displayPanel) displayPanel.classList.add('winner-glow');
+        if (displayText) {
+          displayText.innerHTML = `
+            <div class="slot-result-tags">
+              <span class="slot-tag slot-tag-console">🎮 ${winConsole.name}</span>
+              <span class="slot-tag slot-tag-game" title="${winGame.name}">🕹️ ${winGame.name}</span>
+              <span class="slot-tag slot-tag-duration">⏱️ ${winDuration}</span>
+            </div>
+            <button type="button" class="btn-slot-apply" onclick="loadSlotGameToRoulette('${winConsole.name.replace(/'/g, "\\'")}', '${winGame.name.replace(/'/g, "\\'")}')">
+              Carregar este jogo na roleta ↑
+            </button>
+          `;
+        }
+
+        slotBusy = false;
+        if (btn) btn.disabled = false;
+      }, DURATION_REEL_3 + 40);
+    }
+
+    // Carrega o jogo sorteado na roleta principal
+    function loadSlotGameToRoulette(consoleName, gameName) {
+      const consoleItem = ALL_CONSOLES.find(c => c.name === consoleName);
+      if (consoleItem) {
+        selectConsole(consoleItem.name, consoleItem.maker, consoleItem.era, false);
+        const cGames = (window.GAME_DATA && window.GAME_DATA[consoleName]) || [];
+        const gIdx = cGames.findIndex(g => g.name === gameName);
+        if (gIdx >= 0) {
+          showGame(gIdx, false);
+          showWinnerPopup('Game', gameName, '');
+        }
+      }
+      const targetSec = document.getElementById('gameCard');
+      if (targetSec) {
+        targetSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function resetSlotMachine() {
+      initSlotMachine();
+      const displayPanel = document.getElementById('slotDisplayPanel');
+      const displayText = document.getElementById('slotDisplayText');
+      if (displayPanel) displayPanel.classList.remove('winner-glow');
+      if (displayText) {
+        displayText.innerHTML = '<span class="slot-display-placeholder">PUXE A ALAVANCA PARA SORTEAR</span>';
+      }
+    }
+
+    // Vinculação dos eventos da Slot Machine
+    const leverAssembly = document.getElementById('slotLeverAssembly');
+    if (leverAssembly) leverAssembly.onclick = spinSlotMachine;
+
+    const btnSpinSlot = document.getElementById('btnSpinSlot');
+    if (btnSpinSlot) btnSpinSlot.onclick = spinSlotMachine;
+
+    const bottomTray = document.getElementById('slotBottomTray');
+    if (bottomTray) {
+      bottomTray.onclick = () => {
+        spawnSlotCoins(14);
+        beep(1200, 0.03, 'sine');
+      };
+    }
 
     // Inicialização da interface
     updateActiveConsoles();
     buildConsoleWheelSprite();
     buildGameWheelSprite();
+    initSlotMachine();
     render();
     draw();
     drawGames();
