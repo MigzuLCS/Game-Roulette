@@ -789,10 +789,20 @@
     .slot-reels-container {
       position: relative;
       display: flex;
-      gap: 12px;
+      gap: 22px;
       width: 100%;
-      max-width: 620px;
+      max-width: 650px;
       justify-content: space-between;
+    }
+
+    .slot-reels-fx-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 12;
     }
 
     /* Marcadores em diamante nas extremidades de cada bobina (Payline) */
@@ -1388,6 +1398,9 @@
           <!-- ÁREA DAS 3 BOBINAS (REELS) COM A ALAVANCA AO LADO -->
           <div class="slot-middle-row">
             <div class="slot-reels-container">
+              <!-- CANVAS DE PARTÍCULAS SOBRE AS BOBINAS (ESTILO ROLETA) -->
+              <canvas id="slotReelsFxCanvas" class="slot-reels-fx-canvas" width="650" height="240"></canvas>
+
               <!-- BOBINA 1: CONSOLE -->
               <div class="slot-reel-box" id="reelBoxConsole">
                 <div class="slot-reel-header">Console</div>
@@ -2607,8 +2620,103 @@
     let slotCoins = [];
     let slotCoinsAnimId = null;
 
+    // ==================== PARTÍCULAS DAS BOBINAS (ESTILO ROLETA / SUBTLE BOOM) ====================
+    class ReelFxBoom {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+        this.particles = [];
+        this.animId = null;
+        this.lastTime = 0;
+      }
+
+      resize() {
+        if (!this.canvas) return;
+        const rect = this.canvas.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          const dpr = window.devicePixelRatio || 1;
+          const nw = Math.round(rect.width * dpr);
+          const nh = Math.round(rect.height * dpr);
+          if (this.canvas.width !== nw || this.canvas.height !== nh) {
+            this.canvas.width = nw;
+            this.canvas.height = nh;
+          }
+        }
+      }
+
+      explodeAt(x, y, palette, count = 48) {
+        if (!this.canvas || !this.ctx) return;
+        this.resize();
+        const dpr = window.devicePixelRatio || 1;
+        const px = x * dpr;
+        const py = y * dpr;
+
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = (2.2 + Math.random() * 5.4) * dpr;
+          this.particles.push({
+            x: px,
+            y: py,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            size: (Math.floor(Math.random() * 4) + 3.5) * dpr,
+            color: palette[Math.floor(Math.random() * palette.length)],
+            life: 1.0,
+            decay: 0.018 + Math.random() * 0.02
+          });
+        }
+
+        if (!this.animId) {
+          this.lastTime = performance.now();
+          this.loop = this.loop.bind(this);
+          this.animId = requestAnimationFrame(this.loop);
+        }
+      }
+
+      loop(now) {
+        const dt = Math.min(2, (now - this.lastTime) / 16.67);
+        this.lastTime = now;
+        const c = this.ctx;
+        c.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          p.vy += 0.09 * (window.devicePixelRatio || 1) * dt;
+          p.life -= p.decay * dt;
+
+          if (p.life <= 0) {
+            this.particles.splice(i, 1);
+            continue;
+          }
+
+          c.save();
+          c.globalAlpha = Math.max(0, p.life);
+          c.fillStyle = p.color;
+          c.fillRect(Math.floor(p.x), Math.floor(p.y), p.size, p.size);
+          c.restore();
+        }
+
+        if (this.particles.length > 0) {
+          this.animId = requestAnimationFrame(this.loop);
+        } else {
+          c.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          this.animId = null;
+        }
+      }
+    }
+
+    let reelFxBoom = null;
+
     // Inicialização das bobinas com itens visíveis iniciais
     function initSlotMachine() {
+      // Instancia sistema de partículas das bobinas
+      if (!reelFxBoom) {
+        reelFxBoom = new ReelFxBoom('slotReelsFxCanvas');
+      }
+      if (reelFxBoom) reelFxBoom.resize();
+
       // 1. Bobina Console
       const stripConsole = document.getElementById('reelStripConsole');
       if (stripConsole) {
@@ -2639,6 +2747,7 @@
     }
 
     function resizeSlotCoinsCanvas() {
+      if (reelFxBoom) reelFxBoom.resize();
       const canvas = document.getElementById('slotCoinsCanvas');
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
@@ -2812,14 +2921,31 @@
         if (elapsed > DURATION_REEL_3) return;
 
         beep(560 + Math.random() * 140, 0.012, 'triangle');
-        let nextDelay = 45;
-        if (elapsed < 2500) {
-          nextDelay = 45 + (elapsed / 2500) * 40; // 45ms a 85ms
-        } else if (elapsed < 4000) {
-          nextDelay = 85 + ((elapsed - 2500) / 1500) * 80; // 85ms a 165ms
+        let nextDelay = 50;
+
+        // Ritmo dinâmico acompanhando a desaceleração de cada bobina
+        if (elapsed < 3000) {
+          nextDelay = 45 + (elapsed / 3000) * 35; // 45ms a 80ms (todas rápidas)
+        } else if (elapsed < DURATION_REEL_1) {
+          // Bobina 1 no momento lento de desaceleração suave
+          const p = (elapsed - 3000) / 2000;
+          nextDelay = 80 + p * 70; // 80ms a 150ms
+        } else if (elapsed < 8000) {
+          // Bobinas 2 e 3 continuam girando
+          nextDelay = 65 + ((elapsed - DURATION_REEL_1) / 3000) * 35; // 65ms a 100ms
+        } else if (elapsed < DURATION_REEL_2) {
+          // Bobina 2 no momento lento de desaceleração suave
+          const p = (elapsed - 8000) / 2000;
+          nextDelay = 100 + p * 80; // 100ms a 180ms
+        } else if (elapsed < 12500) {
+          // Bobina 3 continua girando
+          nextDelay = 90 + ((elapsed - DURATION_REEL_2) / 2500) * 45; // 90ms a 135ms
         } else {
-          nextDelay = 165 + ((elapsed - 4000) / 1400) * 110; // 165ms a 275ms
+          // Bobina 3 no momento lento de desaceleração suave até a parada final
+          const p = Math.min(1, (elapsed - 12500) / 2500);
+          nextDelay = 135 + p * 155; // 135ms a 290ms
         }
+
         slotTickerTimeout = setTimeout(scheduleSlotTick, nextDelay);
       }
       clearTimeout(slotTickerTimeout);
@@ -2828,7 +2954,7 @@
       // --- CONFIGURAÇÃO DA BOBINA 1 (CONSOLE) ---
       const stripConsole = document.getElementById('reelStripConsole');
       const boxConsole = document.getElementById('reelBoxConsole');
-      const countConsole = 46;
+      const countConsole = 50;
       const consoleItems = [];
       for (let i = 0; i < countConsole; i++) {
         if (i === countConsole - 2) {
@@ -2846,7 +2972,7 @@
       // --- CONFIGURAÇÃO DA BOBINA 2 (JOGO) ---
       const stripGame = document.getElementById('reelStripGame');
       const boxGame = document.getElementById('reelBoxGame');
-      const countGame = 54;
+      const countGame = 95;
       const gameItems = [];
       for (let i = 0; i < countGame; i++) {
         if (i === countGame - 2) {
@@ -2868,7 +2994,7 @@
       // --- CONFIGURAÇÃO DA BOBINA 3 (DURAÇÃO) ---
       const stripDuration = document.getElementById('reelStripDuration');
       const boxDuration = document.getElementById('reelBoxDuration');
-      const countDuration = 62;
+      const countDuration = 140;
       const durationItems = [];
       for (let i = 0; i < countDuration; i++) {
         if (i === countDuration - 2) {
@@ -2883,11 +3009,13 @@
       stripDuration.style.transform = 'translateY(0px)';
       void stripDuration.offsetWidth;
 
-      // Giros com duração de 4 segundos e desaceleração suave e escalonada (4.0s, 4.7s, 5.4s)
-      const DURATION_REEL_1 = 4000;
-      const DURATION_REEL_2 = 4700;
-      const DURATION_REEL_3 = 5400;
-      const SMOOTH_EASING = 'cubic-bezier(0.18, 0.98, 0.28, 1)';
+      // Duração e desaceleração suave das bobinas:
+      // Bobina 1 (5s), Bobina 2 para 5s depois (10s), Bobina 3 para 5s depois (15s).
+      // Desaceleração prolongada com cerca de 2s no momento lento final antes de travar no item.
+      const DURATION_REEL_1 = 5000;
+      const DURATION_REEL_2 = 10000;
+      const DURATION_REEL_3 = 15000;
+      const SMOOTH_EASING = 'cubic-bezier(0.05, 0.82, 0.08, 1)';
 
       const targetYConsole = -((countConsole - 2 - 1) * 60);
       const targetYGame = -((countGame - 2 - 1) * 60);
@@ -2902,46 +3030,60 @@
       stripDuration.style.transition = `transform ${DURATION_REEL_3}ms ${SMOOTH_EASING}`;
       stripDuration.style.transform = `translateY(${targetYDuration}px)`;
 
-      // Parada suave da Bobina 1 (Console - 4.0s)
+      // Função auxiliar para emitir partículas estilo roleta centradas na bobina
+      function explodeReel(box, palette) {
+        if (!reelFxBoom || !box) return;
+        const cx = box.offsetLeft + box.offsetWidth / 2;
+        const cy = box.offsetTop + box.offsetHeight / 2;
+        reelFxBoom.explodeAt(cx, cy, palette, 52);
+      }
+
+      // Parada suave da Bobina 1 (Console - 5.0s)
       setTimeout(() => {
         beep(220, 0.07, 'square');
+        beep(440, 0.05, 'sine');
         if (boxConsole) {
           boxConsole.classList.remove('reel-snap');
           void boxConsole.offsetWidth;
           boxConsole.classList.add('reel-snap');
+          explodeReel(boxConsole, ['#38bdf8', '#3b82f6', '#60a5fa', '#1e293b', '#64748b', '#cbd5e1']);
         }
-        spawnSlotCoins(5);
+        spawnSlotCoins(8);
       }, DURATION_REEL_1);
 
-      // Parada suave da Bobina 2 (Jogo - 4.7s)
+      // Parada suave da Bobina 2 (Jogo - 10.0s, +5s após a bobina 1)
       setTimeout(() => {
         beep(330, 0.07, 'square');
+        beep(660, 0.05, 'sine');
         if (boxGame) {
           boxGame.classList.remove('reel-snap');
           void boxGame.offsetWidth;
           boxGame.classList.add('reel-snap');
+          explodeReel(boxGame, ['#a78bfa', '#818cf8', '#6366f1', '#3b82f6', '#1e293b', '#cbd5e1']);
         }
-        spawnSlotCoins(6);
+        spawnSlotCoins(12);
       }, DURATION_REEL_2);
 
-      // Parada suave da Bobina 3 (Duração - 5.4s) e Celebração Final
+      // Parada suave da Bobina 3 (Duração - 15.0s, +5s após a bobina 2) e Celebração Final
       setTimeout(() => {
         clearTimeout(slotTickerTimeout);
         beep(440, 0.09, 'square');
+        beep(880, 0.06, 'sine');
         if (boxDuration) {
           boxDuration.classList.remove('reel-snap');
           void boxDuration.offsetWidth;
           boxDuration.classList.add('reel-snap');
+          explodeReel(boxDuration, ['#facc15', '#f59e0b', '#fbbf24', '#ca8a04', '#1e293b', '#fef08a']);
         }
 
         // Fanfarra triunfal
         beep(523, 0.09, 'sine');
-        setTimeout(() => beep(659, 0.09, 'sine'), 80);
-        setTimeout(() => beep(783, 0.12, 'sine'), 160);
-        setTimeout(() => beep(1046, 0.22, 'sine'), 250);
+        setTimeout(() => beep(659, 0.09, 'sine'), 90);
+        setTimeout(() => beep(783, 0.12, 'sine'), 180);
+        setTimeout(() => beep(1046, 0.25, 'sine'), 280);
 
         // Grande explosão de moedas saltando!
-        spawnSlotCoins(36);
+        spawnSlotCoins(42);
 
         // Exibe o resultado final com tags elegantes (sem botão redundante)
         if (displayPanel) displayPanel.classList.add('winner-glow');
