@@ -351,11 +351,13 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 0;
+      padding: 0 10px;
       background: transparent;
       border: none;
       box-shadow: none;
-      max-width: 90%;
+      width: 92%;
+      max-width: 92%;
+      box-sizing: border-box;
       text-align: center;
     }
 
@@ -377,9 +379,9 @@
 
     .winner-title {
       font-family: 'Silkscreen', 'Pixelify Sans', 'VT323', monospace;
-      font-size: clamp(26px, 4.2vw, 44px);
+      font-size: clamp(22px, 3.4vw, 38px);
       font-weight: 600;
-      line-height: 1.15;
+      line-height: 1.18;
       color: #ffffff;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -395,7 +397,14 @@
          0px -3px 0 #0f172a,
          0px  3px 0 #0f172a,
          0 6px 16px rgba(0, 0, 0, 0.65);
-      word-break: break-word;
+      word-break: normal;
+      overflow-wrap: normal;
+      word-wrap: normal;
+      white-space: normal;
+      hyphens: none;
+      -webkit-hyphens: none;
+      display: inline-block;
+      max-width: 100%;
     }
 
     .winner-sub {
@@ -413,6 +422,9 @@
         -1.5px  1.5px 0 #0f172a,
          1.5px  1.5px 0 #0f172a,
          0 3px 8px rgba(0, 0, 0, 0.7);
+      word-break: normal;
+      overflow-wrap: normal;
+      white-space: normal;
     }
 
     .winner-modal-game .winner-title {
@@ -455,7 +467,8 @@
       font-weight: 700;
       color: var(--text);
       line-height: 1.25;
-      word-break: break-word;
+      word-break: normal;
+      overflow-wrap: break-word;
     }
 
     .result-meta {
@@ -1349,8 +1362,24 @@
 
       if (!modal || !titleEl) return;
 
-      titleEl.textContent = title;
+      const safeTitle = (title || '').trim();
+      titleEl.textContent = safeTitle;
       if (subEl) subEl.textContent = sub || '';
+
+      // Ajusta dinamicamente a tipografia para que palavras inteiras NUNCA quebrem no meio
+      const words = safeTitle.split(/\s+/).filter(Boolean);
+      const maxWordLen = words.reduce((max, w) => Math.max(max, w.length), 0);
+      const totalLen = safeTitle.length;
+
+      if (maxWordLen >= 14 || totalLen >= 28) {
+        titleEl.style.fontSize = 'clamp(14px, 2.1vw, 20px)';
+      } else if (maxWordLen >= 11 || totalLen >= 18) {
+        titleEl.style.fontSize = 'clamp(17px, 2.6vw, 26px)';
+      } else if (maxWordLen >= 8 || totalLen >= 12) {
+        titleEl.style.fontSize = 'clamp(20px, 3.2vw, 32px)';
+      } else {
+        titleEl.style.fontSize = 'clamp(24px, 3.8vw, 40px)';
+      }
 
       modal.classList.remove('show');
       void modal.offsetWidth;
