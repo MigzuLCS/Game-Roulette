@@ -967,6 +967,8 @@
       cursor: pointer;
       user-select: none;
       z-index: 10;
+      perspective: 400px;
+      transform-style: preserve-3d;
     }
 
     .slot-lever-socket {
@@ -987,13 +989,14 @@
       left: 8px;
       width: 28px;
       height: 140px;
-      transform-origin: 3px 132px;
-      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-origin: 3px 138px;
+      transform-style: preserve-3d;
+      transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .slot-lever-arm.pulled {
-      transform: rotate(62deg) scaleY(0.85);
-      transition: transform 0.1s ease-in;
+      transform: rotateX(-65deg);
+      transition: transform 0.12s ease-in;
     }
 
     .slot-lever-shaft {
@@ -1017,11 +1020,17 @@
       border: 2.2px solid #0f172a;
       border-radius: 50%;
       box-shadow: 0 4px 8px rgba(15, 23, 42, 0.4), inset 0 2px 3px rgba(255, 255, 255, 0.25);
-      transition: transform 0.1s;
+      transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.22s ease;
     }
 
     .slot-lever-assembly:hover .slot-lever-knob {
       transform: scale(1.08);
+    }
+
+    .slot-lever-arm.pulled .slot-lever-knob {
+      transform: rotateX(65deg) scale(1.08);
+      box-shadow: 0 16px 20px rgba(15, 23, 42, 0.55), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+      transition: transform 0.12s ease-in, box-shadow 0.12s ease-in;
     }
 
     /* Painel de Exibição do Resultado (Capa à Esquerda + Caixas de Dados Empilhadas) */
@@ -1556,9 +1565,9 @@
                 <div class="slot-info-value" id="slotValGame">—</div>
               </div>
 
-              <!-- 3. Jogar por ou até -->
+              <!-- 3. Tempo de jogo -->
               <div class="slot-info-card slot-card-duration" id="slotCardDuration">
-                <div class="slot-info-label">Jogar por ou até:</div>
+                <div class="slot-info-label">TEMPO DE JOGO</div>
                 <div class="slot-info-value" id="slotValDuration">—</div>
               </div>
             </div>
