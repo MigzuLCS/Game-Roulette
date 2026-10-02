@@ -1,0 +1,2024 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sorteador interativo de consoles e jogos clássicos retrô com roleta dupla, física de desaceleração suave e catálogo offline.">
+  <meta name="theme-color" content="#f1f3f6">
+  <title>Game Roulette — Consoles &amp; Jogos</title>
+  <link rel="icon" type="image/x-icon" href="Game_Roulette.ico">
+  
+  <!-- Fontes: Silkscreen (retrô fina e estilizada), Pixelify Sans & VT323 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;600&family=Silkscreen&family=VT323&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f1f3f6;
+      --surface: #ffffff;
+      --surface-sub: #f8fafc;
+      --surface-sub-hover: #f1f5f9;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-subtle: #eff6ff;
+      --accent: #0f766e;
+      --accent-hover: #115e59;
+      --accent-subtle: #f0fdfa;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      padding: 20px 16px 40px;
+      line-height: 1.5;
+    }
+
+    /* Moldura Principal Externa */
+    .app-frame {
+      max-width: 1360px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Cabeçalho sem emoji */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .brand-info h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .brand-info p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Botões Gerais */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 7px 13px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.1s, box-shadow 0.15s;
+      border: 1px solid transparent;
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .btn-outline {
+      background: var(--surface);
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--surface-sub);
+      border-color: #94a3b8;
+    }
+
+    .btn-icon {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    /* =========================================================================
+       BOTÃO DE GIRAR: DESIGN SIMPLES, ELEGANTE E DISCRETO
+       ========================================================================= */
+    .btn-spin {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 12px 24px;
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      width: 100%;
+      max-width: min(680px, 70vh);
+      border-radius: var(--radius-md);
+      border: 1.5px solid #0f172a;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-spin:hover:not(:disabled) {
+      background: #0f172a;
+      border-color: #000000;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+    }
+
+    .btn-spin-game {
+      background: #1e293b;
+      border-color: #0f172a;
+    }
+
+    .btn-spin-game:hover:not(:disabled) {
+      background: #0f172a;
+    }
+
+    /* Seções */
+    .roulette-section {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .section-status {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Grid principal: Roleta Ampla na esquerda e Coluna Compacta na direita */
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr 330px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* Cards Internos */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Contêiner da Roleta */
+    .wheel-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: var(--surface-sub);
+      padding: 16px;
+      min-height: 480px;
+    }
+
+    .wheel-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: min(680px, 70vh);
+      aspect-ratio: 1;
+      margin: 0 auto;
+      transform-origin: center center;
+      transition: transform 0.04s ease-out;
+    }
+
+    /* Filtro Orgânico Rascunho / Wobble Suave */
+    .wobbly-filter {
+      filter: url(#wobbleFilter);
+      will-change: filter, transform;
+    }
+
+    /* Micro-jiggle sutil e orgânico ao parar a roleta */
+    @keyframes wheelMicroJiggle {
+      0% { transform: scale(1) rotate(0deg); }
+      25% { transform: scale(1.008, 0.992) rotate(-0.35deg); }
+      50% { transform: scale(0.992, 1.008) rotate(0.3deg); }
+      75% { transform: scale(1.004, 0.996) rotate(-0.15deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    .wheel-jiggle {
+      animation: wheelMicroJiggle 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 50%;
+    }
+
+    .pixel-render {
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-crisp-edges;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .fx-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      border-radius: 50%;
+      z-index: 5;
+    }
+
+    /* Marcador / Ponteiro Estilizado (Cliques mecânicos rápidos e sutis) */
+    .pointer {
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(0deg);
+      width: 32px;
+      height: 38px;
+      background: #0f172a;
+      clip-path: polygon(15% 0%, 85% 0%, 100% 30%, 50% 100%, 0% 30%);
+      z-index: 10;
+      transition: transform 0.05s ease-out;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    }
+
+    .pointer::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 18px;
+      background: #ffffff;
+      clip-path: polygon(15% 0%, 85% 0%, 100% 30%, 50% 100%, 0% 30%);
+    }
+
+    .game-pointer {
+      background: #0f172a;
+    }
+
+    .game-pointer::after {
+      background: #ffffff;
+    }
+
+    @keyframes pointerKick {
+      0% { transform: translateX(-50%) rotate(0deg); }
+      40% { transform: translateX(-50%) rotate(-6deg); }
+      100% { transform: translateX(-50%) rotate(0deg); }
+    }
+
+    .pointer-jiggle {
+      animation: pointerKick 0.16s ease-out;
+    }
+
+    /* =========================================================================
+       POPUP DO RESULTADO FLUTUANTE (SEM RETÂNGULO DE FUNDO)
+       ========================================================================= */
+    .winner-modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.85);
+      z-index: 25;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .winner-modal.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    /* Animação suave de line-boil no texto */
+    @keyframes textScribbleJitter {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(-0.35px, 0.25px) rotate(-0.15deg); }
+      50% { transform: translate(0.35px, -0.2px) rotate(0.15deg); }
+      75% { transform: translate(-0.2px, -0.3px) rotate(-0.1deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    .winner-title {
+      font-family: 'Silkscreen', 'Pixelify Sans', 'VT323', monospace;
+      font-size: clamp(26px, 4.2vw, 44px);
+      font-weight: 600;
+      line-height: 1.15;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      filter: url(#wobbleFilter);
+      animation: textScribbleJitter 0.11s infinite steps(2);
+      text-shadow: 
+        -2.5px -2.5px 0 #0f172a,
+         2.5px -2.5px 0 #0f172a,
+        -2.5px  2.5px 0 #0f172a,
+         2.5px  2.5px 0 #0f172a,
+        -3px 0px 0 #0f172a,
+         3px 0px 0 #0f172a,
+         0px -3px 0 #0f172a,
+         0px  3px 0 #0f172a,
+         0 6px 16px rgba(0, 0, 0, 0.65);
+      word-break: break-word;
+    }
+
+    .winner-sub {
+      font-family: 'Silkscreen', 'Pixelify Sans', monospace;
+      font-size: clamp(12px, 1.8vw, 15px);
+      font-weight: 500;
+      color: #f8fafc;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 6px;
+      filter: url(#wobbleFilter);
+      text-shadow: 
+        -1.5px -1.5px 0 #0f172a,
+         1.5px -1.5px 0 #0f172a,
+        -1.5px  1.5px 0 #0f172a,
+         1.5px  1.5px 0 #0f172a,
+         0 3px 8px rgba(0, 0, 0, 0.7);
+    }
+
+    .winner-modal-game .winner-title {
+      color: #ffffff;
+    }
+
+    /* Coluna Lateral */
+    .side-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    /* Box de Resultado */
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .result-card.highlight {
+      border-color: var(--primary);
+      background-color: var(--primary-subtle);
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+
+    .result-title {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .result-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* Foto do Jogo */
+    .cover-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 170px;
+      padding: 12px;
+      background: var(--surface-sub);
+    }
+
+    .game-cover-img {
+      max-height: 160px;
+      max-width: 120px;
+      width: auto;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: block;
+    }
+
+    .cover-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-dim);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .cover-placeholder-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+    }
+
+    /* Listas */
+    .list-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .count-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+    }
+
+    .btn-select-all {
+      font-size: 11px;
+      padding: 2px 8px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .btn-select-all:hover {
+      background: var(--surface-sub);
+      color: var(--text);
+      border-color: #94a3b8;
+    }
+
+    .input-search {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 13px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .input-search:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .items-scroll {
+      max-height: 480px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-strong) transparent;
+      contain: content;
+    }
+
+    .game-items-scroll {
+      max-height: 250px;
+    }
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.1s, color 0.1s, opacity 0.15s;
+    }
+
+    .item-row:last-child {
+      border-bottom: none;
+    }
+
+    .item-row:hover {
+      background-color: var(--surface-sub);
+    }
+
+    .item-row.active {
+      background-color: var(--primary-subtle);
+      color: var(--primary-hover);
+      font-weight: 700;
+      border-left: 3px solid var(--primary);
+    }
+
+    .item-row.excluded {
+      opacity: 0.45;
+    }
+
+    .item-row.excluded .item-title {
+      text-decoration: line-through;
+      color: var(--text-dim);
+    }
+
+    .console-check-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .console-checkbox {
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+      accent-color: #1e293b;
+      border-radius: 3px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .item-title {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-badge {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+    }
+
+    .item-index {
+      font-size: 11px;
+      color: var(--text-dim);
+      width: 24px;
+      text-align: right;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .empty-message {
+      padding: 24px 16px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 0;
+    }
+
+    /* Responsividade */
+    @media (max-width: 1040px) {
+      .section-grid {
+        grid-template-columns: 1fr;
+      }
+      .wheel-card {
+        max-width: 100%;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .app-frame {
+        padding: 16px;
+        gap: 20px;
+      }
+    }
+
+    @media (max-width: 580px) {
+      body {
+        padding: 10px 8px 24px;
+      }
+      .app-frame {
+        padding: 12px;
+      }
+      .result-title {
+        font-size: 20px;
+      }
+      .btn-spin {
+        font-size: 14px;
+        padding: 11px 16px;
+      }
+      .header-actions {
+        width: 100%;
+      }
+      .header-actions .btn {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Filtro SVG Orgânico Scribble Suave (Intensidade Calibrada scale=2.0) -->
+  <svg width="0" height="0" style="position:absolute;pointer-events:none;width:0;height:0;">
+    <defs>
+      <filter id="wobbleFilter">
+        <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.025" numOctaves="2" result="noise" seed="1" />
+        <feDisplacementMap id="disp" in="SourceGraphic" in2="noise" scale="2.0" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
+  <main class="app-frame">
+    <!-- Cabeçalho com Ícones SVG Limpos (Sem Emojis) -->
+    <header class="app-header">
+      <div class="brand-info">
+        <h1>Game Roulette</h1>
+        <p>Sorteador aleatório de consoles e jogos clássicos</p>
+      </div>
+      <div class="header-actions">
+        <!-- Botão Pixel com ícone SVG -->
+        <button class="btn btn-outline" id="pixelBtn" title="Alternar filtro pixelizado">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="6" height="6" x="3" y="3" rx="1"/>
+            <rect width="6" height="6" x="15" y="3" rx="1"/>
+            <rect width="6" height="6" x="3" y="15" rx="1"/>
+            <rect width="6" height="6" x="15" y="15" rx="1"/>
+          </svg>
+          <span>Pixel: <strong id="pixelStatus">ON</strong></span>
+        </button>
+
+        <!-- Botão Wobble com ícone SVG -->
+        <button class="btn btn-outline" id="wobbleBtn" title="Alternar efeito orgânico / jiggle">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12c3-4 6-4 9 0s6 4 9 0"/>
+            <path d="M2 17c3-4 6-4 9 0s6 4 9 0"/>
+          </svg>
+          <span>Wobble: <strong id="wobbleStatus">ON</strong></span>
+        </button>
+
+        <!-- Botão Tela Cheia com ícone SVG -->
+        <button class="btn btn-outline" id="full" title="Alternar tela cheia">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+          <span>Tela cheia</span>
+        </button>
+
+        <!-- Botão Som com ícone SVG dinâmico -->
+        <button class="btn btn-outline" id="snd" title="Ativar ou desativar som">
+          <span id="sndIconWrap" style="display:inline-flex;align-items:center;">
+            <svg class="btn-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+            </svg>
+          </span>
+          <span>Som: <strong id="sndStatus">ON</strong></span>
+        </button>
+
+        <!-- Botão Reset com ícone SVG -->
+        <button class="btn btn-outline" id="reset" title="Reiniciar roleta">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          <span>Reset</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ETAPA 1: ROLETA DE CONSOLES -->
+    <section class="roulette-section" id="consoleSection">
+      <div class="section-head">
+        <div class="section-title">1. Roleta de Consoles</div>
+        <div class="section-status" id="consoleSectionStatus">Gire ou clique em um console da lista</div>
+      </div>
+
+      <div class="section-grid">
+        <!-- Esquerda: Roleta Console Ampliada -->
+        <div class="card wheel-card">
+          <div class="wheel-wrapper wobbly-filter" id="wheelWrapperConsole">
+            <div class="pointer" id="pointer" title="Marcador do console"></div>
+            <canvas id="c" class="pixel-render" width="640" height="640"></canvas>
+            <canvas id="fxCanvasConsole" class="fx-canvas" width="600" height="600"></canvas>
+            
+            <!-- POPUP COMEMORATIVO ESTILIZADO -->
+            <div class="winner-modal" id="winnerModalConsole">
+              <div class="winner-title" id="winnerTitleConsole">—</div>
+              <div class="winner-sub" id="winnerSubConsole"></div>
+            </div>
+          </div>
+
+          <!-- Botão mais simples, elegante e com contorno de rascunho -->
+          <button id="spin" class="btn btn-spin btn-spin-console wobbly-filter">
+            Girar roleta de consoles
+          </button>
+        </div>
+
+        <!-- Direita: Console que caiu + Nomes Consoles (Mais Compacto) -->
+        <div class="side-column">
+          <!-- Box: console que caiu -->
+          <div class="card result-card" id="consoleResultBox">
+            <div class="card-label">Console que caiu</div>
+            <div class="result-title" id="name">—</div>
+            <div class="result-meta" id="maker">Gire a roleta de consoles</div>
+          </div>
+
+          <!-- Box: nomes consoles com checkbox para escolher quais participam -->
+          <div class="card list-card">
+            <div class="list-header">
+              <div class="card-label">Nomes dos consoles</div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <button type="button" id="toggleAllConsoles" class="btn-select-all" title="Marcar ou desmarcar todos os consoles">Nenhum</button>
+                <span class="count-badge" id="consoleCount">—</span>
+              </div>
+            </div>
+            <input id="q" type="text" placeholder="Pesquisar console..." class="input-search">
+            <div id="list" class="items-scroll"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ETAPA 2: ROLETA DE JOGOS -->
+    <section class="roulette-section" id="gameCard">
+      <div class="section-head">
+        <div class="section-title">2. Roleta de Jogos — <span id="gameConsole" style="color:var(--text);font-weight:800">—</span></div>
+        <div class="section-status" id="gameStatus">Aguardando sorteio de console...</div>
+      </div>
+
+      <div class="section-grid">
+        <!-- Esquerda: Roleta Jogo Ampliada -->
+        <div class="card wheel-card">
+          <div class="wheel-wrapper wobbly-filter" id="wheelWrapperGame">
+            <div class="pointer game-pointer" id="gamePointer" title="Marcador do jogo"></div>
+            <canvas id="gc" class="pixel-render" width="640" height="640"></canvas>
+            <canvas id="fxCanvasGame" class="fx-canvas" width="600" height="600"></canvas>
+
+            <!-- POPUP COMEMORATIVO ESTILIZADO -->
+            <div class="winner-modal winner-modal-game" id="winnerModalGame">
+              <div class="winner-title" id="winnerTitleGame">—</div>
+              <div class="winner-sub" id="winnerSubGame"></div>
+            </div>
+          </div>
+
+          <!-- Botão mais simples, elegante e com contorno de rascunho -->
+          <button id="gameSpin" class="btn btn-spin btn-spin-game wobbly-filter" disabled>
+            Girar roleta de jogos
+          </button>
+        </div>
+
+        <!-- Direita: Nome Jogo + Foto Jogo + Lista Jogos (Mais Compacto) -->
+        <div class="side-column">
+          <!-- Box: nome jogo (sem ano de lançamento) -->
+          <div class="card result-card game-result-card" id="gameResultBox">
+            <div class="card-label">Nome do jogo</div>
+            <div class="result-title" id="gameName">—</div>
+            <div class="result-meta" id="gameMeta">Gire a roleta de jogos</div>
+          </div>
+
+          <!-- Box: foto do jogo com ícone SVG limpo -->
+          <div class="card cover-card" id="gameCoverBox">
+            <img id="gameCover" class="game-cover-img" alt="Capa do Jogo" style="display:none;" loading="lazy" decoding="async">
+            <div class="cover-placeholder" id="coverPlaceholder">
+              <div class="cover-placeholder-icon">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="6" y1="12" x2="10" y2="12"></line>
+                  <line x1="8" y1="10" x2="8" y2="14"></line>
+                  <line x1="15" y1="13" x2="15.01" y2="13"></line>
+                  <line x1="18" y1="11" x2="18.01" y2="11"></line>
+                  <rect x="2" y="6" width="20" height="12" rx="4"></rect>
+                </svg>
+              </div>
+              <span>Capa do jogo</span>
+            </div>
+          </div>
+
+          <!-- Box: lista de jogos (sem ano de lançamento) -->
+          <div class="card list-card">
+            <div class="list-header">
+              <div class="card-label">Lista de jogos</div>
+              <span class="count-badge" id="gameCount">0 jogos</span>
+            </div>
+            <input id="qGame" type="text" placeholder="Pesquisar jogo no catálogo..." class="input-search">
+            <div id="gameList" class="items-scroll game-items-scroll">
+              <div class="empty-message">Gire a roleta de consoles para listar os jogos.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="game_data.js"></script>
+  <script>
+    // =========================================================================
+    // PALETA DE CORES DAS ROLETAS (Tons de cinza para azul acinzentado)
+    // =========================================================================
+    const WHEEL_PALETTE = [
+      '#1e293b', // Slate escuro
+      '#475569', // Cinza chumbo frio
+      '#64748b', // Azul acinzentado médio
+      '#334155', // Ardósia profundo
+      '#94a3b8', // Cinza azulado claro
+      '#27374d', // Azul petróleo acinzentado
+      '#526d82', // Azul ardósia clássico
+      '#38495c', // Azul aço grafite
+      '#7b90a7', // Névoa azulada
+      '#192534', // Grafite escuro azulado
+      '#5c738e', // Jeans acinzentado
+      '#2d3d52'  // Azul noite acinzentado
+    ];
+
+    // =========================================================================
+    // CONFIGURAÇÃO DO FILTRO PIXELIZADO & EFEITOS WOBBLY
+    // =========================================================================
+    let isPixelated = true; // Filtro pixelizado ativo por padrão
+    let isWobbleActive = true; // Efeito orgânico ativo por padrão
+    const PIXEL_RES = 640;
+
+    // Buffers intermediários
+    const offConsole = document.createElement('canvas');
+    offConsole.width = 1000;
+    offConsole.height = 1000;
+    const offCtx = offConsole.getContext('2d');
+
+    const offGame = document.createElement('canvas');
+    offGame.width = 1000;
+    offGame.height = 1000;
+    const offGameCtx = offGame.getContext('2d');
+
+    // Telas visíveis
+    const cCanvas = document.getElementById('c');
+    cCanvas.width = PIXEL_RES;
+    cCanvas.height = PIXEL_RES;
+    const ctx = cCanvas.getContext('2d');
+
+    const gcCanvas = document.getElementById('gc');
+    gcCanvas.width = PIXEL_RES;
+    gcCanvas.height = PIXEL_RES;
+    const gctx = gcCanvas.getContext('2d');
+
+    // =========================================================================
+    // CACHE DE SPRITE DAS ROLETAS (RENDERIZAÇÃO DE ALTA PERFORMANCE)
+    // =========================================================================
+    const cachedConsoleCanvas = document.createElement('canvas');
+    cachedConsoleCanvas.width = 1000;
+    cachedConsoleCanvas.height = 1000;
+    const cachedConsoleCtx = cachedConsoleCanvas.getContext('2d');
+
+    const cachedGameCanvas = document.createElement('canvas');
+    cachedGameCanvas.width = 1000;
+    cachedGameCanvas.height = 1000;
+    const cachedGameCtx = cachedGameCanvas.getContext('2d');
+
+    // Animação de Line-Boil contínua no SVG
+    let scribbleSeed = 1;
+    let lastBoilTime = 0;
+    function updateScribbleBoil(now) {
+      if (document.hidden || !isWobbleActive) {
+        requestAnimationFrame(updateScribbleBoil);
+        return;
+      }
+      if (now - lastBoilTime > 115) {
+        lastBoilTime = now;
+        scribbleSeed = (scribbleSeed % 99) + 1;
+        const turb = document.getElementById('turb');
+        if (turb) {
+          turb.setAttribute('seed', scribbleSeed);
+        }
+      }
+      requestAnimationFrame(updateScribbleBoil);
+    }
+    requestAnimationFrame(updateScribbleBoil);
+
+    // ==================== BASE DE CONSOLES ====================
+    const RAW_CONSOLES = [
+      {"maker": "Nintendo", "name": "NES", "era": "8-bit"},
+      {"maker": "Nintendo", "name": "SNES", "era": "16-bit"},
+      {"maker": "Nintendo", "name": "Nintendo 64", "era": "5ª Geração"},
+      {"maker": "Nintendo", "name": "GameCube", "era": "6ª Geração"},
+      {"maker": "Nintendo", "name": "Wii", "era": "7ª Geração"},
+      {"maker": "Nintendo", "name": "Wii U", "era": "8ª Geração"},
+      {"maker": "Nintendo", "name": "Switch", "era": "Híbrido"},
+      {"maker": "Nintendo", "name": "Game Boy", "era": "Portátil"},
+      {"maker": "Nintendo", "name": "Game Boy Color", "era": "Portátil"},
+      {"maker": "Nintendo", "name": "Game Boy Advance", "era": "Portátil"},
+      {"maker": "Nintendo", "name": "Nintendo DS", "era": "Portátil"},
+      {"maker": "Nintendo", "name": "Nintendo 3DS", "era": "Portátil"},
+      {"maker": "Sony", "name": "PlayStation", "era": "5ª Geração"},
+      {"maker": "Sony", "name": "PlayStation 2", "era": "6ª Geração"},
+      {"maker": "Sony", "name": "PlayStation 3", "era": "7ª Geração"},
+      {"maker": "Sony", "name": "PlayStation 4", "era": "8ª Geração"},
+      {"maker": "Sony", "name": "PlayStation 5", "era": "9ª Geração"},
+      {"maker": "Sony", "name": "PSP", "era": "Portátil"},
+      {"maker": "Sony", "name": "PS Vita", "era": "Portátil"},
+      {"maker": "Microsoft", "name": "Xbox", "era": "6ª Geração"},
+      {"maker": "Microsoft", "name": "Xbox 360", "era": "7ª Geração"},
+      {"maker": "Microsoft", "name": "Xbox One", "era": "8ª Geração"},
+      {"maker": "Microsoft", "name": "Xbox Series X/S", "era": "9ª Geração"},
+      {"maker": "Sega", "name": "Master System", "era": "8-bit"},
+      {"maker": "Sega", "name": "Mega Drive / Genesis", "era": "16-bit"},
+      {"maker": "Sega", "name": "Sega CD", "era": "Add-on"},
+      {"maker": "Sega", "name": "Sega Saturn", "era": "5ª Geração"},
+      {"maker": "Sega", "name": "Dreamcast", "era": "6ª Geração"},
+      {"maker": "Sega", "name": "Game Gear", "era": "Portátil"},
+      {"maker": "Atari", "name": "Atari 2600", "era": "Clássico"},
+      {"maker": "NEC", "name": "PC Engine / TurboGrafx-16", "era": "16-bit"},
+      {"maker": "NEC", "name": "PC-FX", "era": "1994"},
+      {"maker": "SNK", "name": "Neo Geo AES", "era": "Arcade"},
+      {"maker": "SNK", "name": "Neo Geo CD", "era": "CD"},
+      {"maker": "SNK", "name": "Neo Geo Pocket Color", "era": "Portátil"},
+      {"maker": "3DO", "name": "3DO Interactive Multiplayer", "era": "32-bit"},
+      {"maker": "Coleco", "name": "ColecoVision", "era": "Clássico"},
+      {"maker": "Mattel", "name": "Intellivision", "era": "Clássico"},
+      {"maker": "Nintendo", "name": "Famicom Disk System", "era": "Add-on"},
+      {"maker": "Nintendo", "name": "Virtual Boy", "era": "1995"},
+      {"maker": "PC", "name": "PC", "era": "Computador"}
+    ];
+
+    // Filtra consoles com jogos disponíveis na base local
+    const ALL_CONSOLES = RAW_CONSOLES.filter(x => Array.isArray((window.GAME_DATA || {})[x.name]) && (window.GAME_DATA || {})[x.name].length > 0);
+
+    // =========================================================================
+    // CACHE LOCAL (localStorage): PREFERÊNCIAS DE CONSOLE SALVAS
+    // =========================================================================
+    const STORAGE_KEY_CONSOLES = 'game_roulette_enabled_consoles';
+
+    function getSavedConsolePreferences() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_CONSOLES);
+        if (raw) {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list) && list.length > 0) {
+            const validSet = new Set(ALL_CONSOLES.map(c => c.name));
+            const filtered = list.filter(name => validSet.has(name));
+            if (filtered.length > 0) {
+              return new Set(filtered);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Erro ao ler cache local de consoles:', err);
+      }
+      return null;
+    }
+
+    function saveConsolePreferences() {
+      try {
+        localStorage.setItem(STORAGE_KEY_CONSOLES, JSON.stringify([...enabledConsoleNames]));
+      } catch (err) {
+        console.warn('Erro ao salvar cache local de consoles:', err);
+      }
+    }
+
+    // Inicializa seleção do cache local ou marca todos por padrão
+    const savedConsoles = getSavedConsolePreferences();
+    const enabledConsoleNames = savedConsoles ? savedConsoles : new Set(ALL_CONSOLES.map(c => c.name));
+
+    // Array de consoles atualmente ativos na roleta
+    let E = ALL_CONSOLES.filter(c => enabledConsoleNames.has(c.name));
+    let N = E.length;
+    const cx = 500, cy = 500, R = 475;
+    let rot = 0, busy = false, sound = true;
+    let selectedConsoleName = null;
+
+    // ==================== ÁUDIO ====================
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const AudioCtor = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtor) audioCtx = new AudioCtor();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function beep(f, d = 0.08, type = 'square') {
+      if (!sound) return;
+      try {
+        const a = getAudioCtx();
+        if (!a) return;
+        const o = a.createOscillator();
+        const g = a.createGain();
+        o.type = type;
+        o.frequency.setValueAtTime(f, a.currentTime);
+        g.gain.setValueAtTime(0.04, a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + d);
+        o.connect(g);
+        g.connect(a.destination);
+        o.start();
+        o.stop(a.currentTime + d);
+        setTimeout(() => {
+          try { o.disconnect(); g.disconnect(); } catch (e) {}
+        }, (d + 0.05) * 1000);
+      } catch (e) {}
+    }
+
+    // ==================== PARTÍCULAS ====================
+    class SubtleBoom {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.animId = null;
+        this.lastTime = 0;
+      }
+      explode(count = 40) {
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const palette = ['#3b82f6', '#64748b', '#94a3b8', '#1e293b', '#38bdf8', '#cbd5e1'];
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 2.5 + Math.random() * 5.5;
+          this.particles.push({
+            x: w / 2,
+            y: h / 2,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            size: Math.floor(Math.random() * 4) + 3,
+            color: palette[Math.floor(Math.random() * palette.length)],
+            life: 1.0,
+            decay: 0.024 + Math.random() * 0.025
+          });
+        }
+        if (!this.animId) {
+          this.lastTime = performance.now();
+          this.loop = this.loop.bind(this);
+          this.animId = requestAnimationFrame(this.loop);
+        }
+      }
+      loop(now) {
+        const dt = Math.min(2, (now - this.lastTime) / 16.67);
+        this.lastTime = now;
+        const c = this.ctx;
+        c.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          p.vy += 0.08 * dt;
+          p.life -= p.decay * dt;
+
+          if (p.life <= 0) {
+            this.particles.splice(i, 1);
+            continue;
+          }
+
+          c.save();
+          c.globalAlpha = Math.max(0, p.life);
+          c.fillStyle = p.color;
+          c.fillRect(Math.floor(p.x), Math.floor(p.y), p.size, p.size);
+          c.restore();
+        }
+
+        if (this.particles.length > 0) {
+          this.animId = requestAnimationFrame(this.loop);
+        } else {
+          c.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          this.animId = null;
+        }
+      }
+    }
+
+    const consoleBoom = new SubtleBoom('fxCanvasConsole');
+    const gameBoom = new SubtleBoom('fxCanvasGame');
+
+    function labelText(s) {
+      return s.length > 22 ? s.slice(0, 21) + '…' : s;
+    }
+
+    // ==================== FILTRO PIXELIZADO RETRÔ ====================
+    function blitToDisplay(targetCanvas, targetCtx, sourceCanvas) {
+      if (isPixelated) {
+        if (targetCanvas.width !== PIXEL_RES) {
+          targetCanvas.width = PIXEL_RES;
+          targetCanvas.height = PIXEL_RES;
+        }
+        targetCtx.imageSmoothingEnabled = false;
+        targetCtx.drawImage(sourceCanvas, 0, 0, PIXEL_RES, PIXEL_RES);
+      } else {
+        if (targetCanvas.width !== 1000) {
+          targetCanvas.width = 1000;
+          targetCanvas.height = 1000;
+        }
+        targetCtx.imageSmoothingEnabled = true;
+        targetCtx.drawImage(sourceCanvas, 0, 0, 1000, 1000);
+      }
+    }
+
+    // =========================================================================
+    // CONSTRUÇÃO DO SPRITE DA ROLETA DE CONSOLES (OTIMIZADO)
+    // =========================================================================
+    function buildConsoleWheelSprite() {
+      cachedConsoleCtx.clearRect(0, 0, 1000, 1000);
+      if (N === 0) return;
+
+      const step = 2 * Math.PI / N;
+      cachedConsoleCtx.save();
+      cachedConsoleCtx.translate(cx, cy);
+
+      for (let i = 0; i < N; i++) {
+        const a0 = -Math.PI / 2 + i * step;
+        const a1 = a0 + step;
+        const mid = (a0 + a1) / 2;
+
+        cachedConsoleCtx.beginPath();
+        cachedConsoleCtx.moveTo(0, 0);
+        cachedConsoleCtx.arc(0, 0, R, a0, a1);
+        cachedConsoleCtx.closePath();
+        cachedConsoleCtx.fillStyle = WHEEL_PALETTE[i % WHEEL_PALETTE.length];
+        cachedConsoleCtx.fill();
+
+        cachedConsoleCtx.strokeStyle = '#ffffff';
+        cachedConsoleCtx.lineWidth = 2.5;
+        cachedConsoleCtx.stroke();
+
+        cachedConsoleCtx.save();
+        cachedConsoleCtx.rotate(mid);
+        cachedConsoleCtx.translate(R * 0.62, 0);
+
+        cachedConsoleCtx.font = '800 16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+        cachedConsoleCtx.textAlign = 'center';
+        cachedConsoleCtx.textBaseline = 'middle';
+        cachedConsoleCtx.fillStyle = '#ffffff';
+        cachedConsoleCtx.strokeStyle = 'rgba(15, 23, 42, 0.95)';
+        cachedConsoleCtx.lineWidth = 3.5;
+        cachedConsoleCtx.lineJoin = 'round';
+        cachedConsoleCtx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+        cachedConsoleCtx.shadowBlur = 3;
+
+        const label = labelText(E[i].name);
+        cachedConsoleCtx.strokeText(label, 0, 0);
+        cachedConsoleCtx.fillText(label, 0, 0);
+        cachedConsoleCtx.restore();
+      }
+
+      cachedConsoleCtx.restore();
+
+      // Aro externo limpo
+      cachedConsoleCtx.beginPath();
+      cachedConsoleCtx.arc(cx, cy, R, 0, 2 * Math.PI);
+      cachedConsoleCtx.strokeStyle = '#cbd5e1';
+      cachedConsoleCtx.lineWidth = 5;
+      cachedConsoleCtx.stroke();
+    }
+
+    // =========================================================================
+    // DESENHO DA ROLETA DE CONSOLES
+    // =========================================================================
+    function draw() {
+      offCtx.clearRect(0, 0, 1000, 1000);
+
+      if (N === 0) {
+        offCtx.beginPath();
+        offCtx.arc(cx, cy, R, 0, 2 * Math.PI);
+        offCtx.fillStyle = '#f8fafc';
+        offCtx.fill();
+        offCtx.strokeStyle = '#cbd5e1';
+        offCtx.lineWidth = 5;
+        offCtx.stroke();
+
+        offCtx.beginPath();
+        offCtx.arc(cx, cy, 52, 0, 2 * Math.PI);
+        offCtx.fillStyle = '#ffffff';
+        offCtx.fill();
+        offCtx.strokeStyle = '#cbd5e1';
+        offCtx.lineWidth = 3.5;
+        offCtx.stroke();
+
+        blitToDisplay(cCanvas, ctx, offConsole);
+        return;
+      }
+
+      offCtx.save();
+      offCtx.translate(cx, cy);
+      offCtx.rotate(rot);
+      offCtx.drawImage(cachedConsoleCanvas, -cx, -cy);
+      offCtx.restore();
+
+      // Miolo central branco limpo (raio 52)
+      offCtx.beginPath();
+      offCtx.arc(cx, cy, 52, 0, 2 * Math.PI);
+      offCtx.fillStyle = '#ffffff';
+      offCtx.fill();
+      offCtx.strokeStyle = '#cbd5e1';
+      offCtx.lineWidth = 3.5;
+      offCtx.stroke();
+
+      blitToDisplay(cCanvas, ctx, offConsole);
+    }
+
+    function getPointerSector() {
+      if (N === 0) return 0;
+      const step = 2 * Math.PI / N;
+      const angle = (((-rot) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      return Math.floor(angle / step) % N;
+    }
+
+    // ==================== CONTROLE DO POPUP COMEMORATIVO ====================
+    function showWinnerPopup(type, title, sub) {
+      const modal = document.getElementById(type === 'Console' ? 'winnerModalConsole' : 'winnerModalGame');
+      const titleEl = document.getElementById(type === 'Console' ? 'winnerTitleConsole' : 'winnerTitleGame');
+      const subEl = document.getElementById(type === 'Console' ? 'winnerSubConsole' : 'winnerSubGame');
+
+      if (!modal || !titleEl) return;
+
+      titleEl.textContent = title;
+      if (subEl) subEl.textContent = sub || '';
+
+      modal.classList.remove('show');
+      void modal.offsetWidth;
+      modal.classList.add('show');
+
+      clearTimeout(modal._closeTimer);
+      modal._closeTimer = setTimeout(() => {
+        modal.classList.remove('show');
+      }, 4500);
+
+      modal.onclick = () => {
+        modal.classList.remove('show');
+      };
+    }
+
+    // =========================================================================
+    // GIRO DE CONSOLES (DEFORMAÇÃO ELÁSTICA SUTIL E DESACELERAÇÃO SUAVE)
+    // Duração: 4,2 segundos (k=2.3)
+    // =========================================================================
+    const CONSOLE_SPIN_DURATION = 4200; // 4.2 segundos
+
+    function spin() {
+      if (busy || N === 0) return;
+      busy = true;
+      getAudioCtx();
+      document.getElementById('spin').disabled = true;
+
+      document.getElementById('winnerModalConsole').classList.remove('show');
+
+      const wheelWrap = document.getElementById('wheelWrapperConsole');
+      wheelWrap.classList.remove('wheel-jiggle');
+
+      const pointer = document.getElementById('pointer');
+      pointer.style.transform = 'translateX(-50%) rotate(0deg)';
+
+      const duration = CONSOLE_SPIN_DURATION;
+      const startAngle = rot;
+      const turns = 4.5 + Math.random() * 2.0;
+      const totalDelta = turns * 2 * Math.PI + Math.random() * 2 * Math.PI;
+      const startTime = performance.now();
+      let lastSector = getPointerSector();
+      let lastBeepTime = 0;
+
+      function frame(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(1, elapsed / duration);
+        const progress = 1 - Math.pow(1 - t, 2.3);
+        rot = startAngle + totalDelta * progress;
+        const speed = Math.max(0, Math.pow(1 - t, 1.3));
+
+        draw();
+
+        // Deformação elástica orgânica e sutil (calibrada para beleza sem exagero)
+        if (isWobbleActive) {
+          const wobbleAngle = Math.sin(elapsed * 0.016) * (0.85 * speed);
+          const squishX = 1 + Math.sin(elapsed * 0.026) * (0.009 * speed);
+          const squishY = 1 - Math.sin(elapsed * 0.026) * (0.009 * speed);
+          wheelWrap.style.transform = 'scale(' + squishX + ',' + squishY + ') rotate(' + wobbleAngle + 'deg)';
+        }
+
+        const sector = getPointerSector();
+
+        if (sector !== lastSector) {
+          lastSector = sector;
+          const kick = Math.min(6, 2.5 + 4 * speed);
+          pointer.style.transform = 'translateX(-50%) rotate(-' + kick + 'deg)';
+          setTimeout(function() {
+            pointer.style.transform = 'translateX(-50%) rotate(0deg)';
+          }, 45);
+
+          if (now - lastBeepTime >= 40) {
+            lastBeepTime = now;
+            beep(190 + Math.min(500, speed * 600), 0.035);
+          }
+        }
+
+        if (t < 1) {
+          requestAnimationFrame(frame);
+          return;
+        }
+
+        draw();
+
+        setTimeout(function() {
+          if (isWobbleActive) {
+            wheelWrap.style.transform = '';
+            wheelWrap.classList.remove('wheel-jiggle');
+            void wheelWrap.offsetWidth;
+            wheelWrap.classList.add('wheel-jiggle');
+          }
+
+          pointer.classList.remove('pointer-jiggle');
+          void pointer.offsetWidth;
+          pointer.classList.add('pointer-jiggle');
+
+          const index = getPointerSector();
+          const consoleItem = E[index];
+          if (consoleItem) {
+            selectConsole(consoleItem.name, consoleItem.maker, consoleItem.era, true);
+            showWinnerPopup('Console', consoleItem.name, consoleItem.maker + (consoleItem.era ? ' • ' + consoleItem.era : ''));
+          }
+
+          busy = false;
+          document.getElementById('spin').disabled = N === 0;
+        }, 80);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    function selectConsole(name, maker, era, isSpin = false) {
+      selectedConsoleName = name;
+      document.getElementById('name').textContent = name;
+      document.getElementById('maker').textContent = (maker || '') + (era ? ' • ' + era : '');
+
+      const box = document.getElementById('consoleResultBox');
+      box.classList.remove('highlight');
+      void box.offsetWidth;
+      box.classList.add('highlight');
+
+      if (isSpin) {
+        beep(587, 0.10, 'sine');
+        setTimeout(() => beep(880, 0.12, 'sine'), 100);
+        setTimeout(() => beep(1175, 0.18, 'sine'), 220);
+        consoleBoom.explode(40);
+      }
+
+      render(document.getElementById('q').value);
+      loadGamesFor(name);
+    }
+
+    // ==================== SELEÇÃO DE CONSOLES (CHECKBOX + CACHE LOCAL) ====================
+    function toggleConsole(name) {
+      if (enabledConsoleNames.has(name)) {
+        if (enabledConsoleNames.size <= 1) {
+          alert('Pelo menos 1 console deve permanecer ativo na roleta.');
+          render(document.getElementById('q').value);
+          return;
+        }
+        enabledConsoleNames.delete(name);
+      } else {
+        enabledConsoleNames.add(name);
+      }
+      updateActiveConsoles();
+    }
+
+    function toggleAllConsoles() {
+      if (enabledConsoleNames.size === ALL_CONSOLES.length) {
+        const keep = selectedConsoleName || ALL_CONSOLES[0].name;
+        enabledConsoleNames.clear();
+        enabledConsoleNames.add(keep);
+      } else {
+        ALL_CONSOLES.forEach(c => enabledConsoleNames.add(c.name));
+      }
+      updateActiveConsoles();
+    }
+
+    function updateActiveConsoles() {
+      E = ALL_CONSOLES.filter(c => enabledConsoleNames.has(c.name));
+      N = E.length;
+
+      const countBadge = document.getElementById('consoleCount');
+      if (countBadge) {
+        countBadge.textContent = N + ' de ' + ALL_CONSOLES.length;
+      }
+
+      const toggleBtn = document.getElementById('toggleAllConsoles');
+      if (toggleBtn) {
+        toggleBtn.textContent = enabledConsoleNames.size === ALL_CONSOLES.length ? 'Nenhum' : 'Todos';
+      }
+
+      document.getElementById('spin').disabled = busy || N === 0;
+
+      buildConsoleWheelSprite();
+      draw();
+      render(document.getElementById('q').value);
+      saveConsolePreferences();
+    }
+
+    // ==================== LISTA DE CONSOLES ====================
+    let renderTimer = null;
+    function render(q = '') {
+      clearTimeout(renderTimer);
+      renderTimer = setTimeout(() => {
+        const query = q.toLowerCase();
+        const listEl = document.getElementById('list');
+        let htmlStr = '';
+        let matches = 0;
+
+        for (let i = 0; i < ALL_CONSOLES.length; i++) {
+          const item = ALL_CONSOLES[i];
+          if ((item.name + ' ' + item.maker + ' ' + item.era).toLowerCase().includes(query)) {
+            matches++;
+            const isSelected = selectedConsoleName === item.name;
+            const isChecked = enabledConsoleNames.has(item.name);
+            const color = WHEEL_PALETTE[i % WHEEL_PALETTE.length];
+
+            htmlStr += '<div class="item-row ' + (isSelected ? 'active ' : '') + (!isChecked ? 'excluded ' : '') + '" data-name="' + item.name.replace(/"/g, '&quot;') + '" data-maker="' + item.maker.replace(/"/g, '&quot;') + '" data-era="' + item.era.replace(/"/g, '&quot;') + '">'
+              + '<span class="console-check-wrap" title="' + (isChecked ? 'Desmarcar da roleta' : 'Incluir na roleta') + '">'
+              + '<input type="checkbox" class="console-checkbox" data-name="' + item.name.replace(/"/g, '&quot;') + '" ' + (isChecked ? 'checked' : '') + '>'
+              + '</span>'
+              + '<span class="dot" style="background:' + color + '"></span>'
+              + '<span class="item-title">' + item.name + '</span>'
+              + '<span class="item-badge">' + item.era + '</span>'
+              + '</div>';
+          }
+        }
+
+        if (matches === 0) {
+          htmlStr = '<div class="empty-message">Nenhum console encontrado.</div>';
+        }
+        listEl.innerHTML = htmlStr;
+      }, 20);
+    }
+
+    // ==================== SEGUNDA ROLETA: JOGOS ====================
+    let games = [], grot = 0, gBusy = false;
+    let selectedGameIndex = -1;
+    const gcx = 500, gcy = 500, gR = 475;
+
+    function gameObjects(list) {
+      return list.map((x, i) => typeof x === 'string' ? ({ name: x, year: null, cover: null, id: i }) : x);
+    }
+
+    function gameLabel(s) {
+      return s.length > 24 ? s.slice(0, 23) + '…' : s;
+    }
+
+    // =========================================================================
+    // CONSTRUÇÃO DO SPRITE DA ROLETA DE JOGOS
+    // =========================================================================
+    function buildGameWheelSprite() {
+      cachedGameCtx.clearRect(0, 0, 1000, 1000);
+      const n = games.length;
+
+      if (!n) {
+        const placeholderSegments = 12;
+        const step = 2 * Math.PI / placeholderSegments;
+        cachedGameCtx.save();
+        cachedGameCtx.translate(gcx, gcy);
+
+        for (let i = 0; i < placeholderSegments; i++) {
+          const a0 = -Math.PI / 2 + i * step;
+          const a1 = a0 + step;
+          cachedGameCtx.beginPath();
+          cachedGameCtx.moveTo(0, 0);
+          cachedGameCtx.arc(0, 0, gR, a0, a1);
+          cachedGameCtx.closePath();
+          cachedGameCtx.fillStyle = WHEEL_PALETTE[i % WHEEL_PALETTE.length];
+          cachedGameCtx.fill();
+          cachedGameCtx.strokeStyle = '#ffffff';
+          cachedGameCtx.lineWidth = 2.5;
+          cachedGameCtx.stroke();
+        }
+        cachedGameCtx.restore();
+
+        cachedGameCtx.beginPath();
+        cachedGameCtx.arc(gcx, gcy, gR, 0, 2 * Math.PI);
+        cachedGameCtx.strokeStyle = '#cbd5e1';
+        cachedGameCtx.lineWidth = 5;
+        cachedGameCtx.stroke();
+        return;
+      }
+
+      const step = 2 * Math.PI / n;
+      cachedGameCtx.save();
+      cachedGameCtx.translate(gcx, gcy);
+
+      let fontSize = 15;
+      if (n > 70) fontSize = 13;
+      if (n > 110) fontSize = 11.5;
+
+      for (let i = 0; i < n; i++) {
+        const a0 = -Math.PI / 2 + i * step;
+        const a1 = a0 + step;
+        const mid = (a0 + a1) / 2;
+
+        cachedGameCtx.beginPath();
+        cachedGameCtx.moveTo(0, 0);
+        cachedGameCtx.arc(0, 0, gR, a0, a1);
+        cachedGameCtx.closePath();
+        cachedGameCtx.fillStyle = WHEEL_PALETTE[i % WHEEL_PALETTE.length];
+        cachedGameCtx.fill();
+
+        cachedGameCtx.strokeStyle = '#ffffff';
+        cachedGameCtx.lineWidth = n > 140 ? 1 : 2.5;
+        cachedGameCtx.stroke();
+
+        if (n <= 140) {
+          cachedGameCtx.save();
+          cachedGameCtx.rotate(mid);
+          cachedGameCtx.translate(gR * 0.62, 0);
+
+          cachedGameCtx.font = '800 ' + fontSize + 'px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+          cachedGameCtx.textAlign = 'center';
+          cachedGameCtx.textBaseline = 'middle';
+          cachedGameCtx.fillStyle = '#ffffff';
+          cachedGameCtx.strokeStyle = 'rgba(15, 23, 42, 0.95)';
+          cachedGameCtx.lineWidth = 3.5;
+          cachedGameCtx.lineJoin = 'round';
+          cachedGameCtx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+          cachedGameCtx.shadowBlur = 3;
+
+          const label = gameLabel(games[i].name);
+          cachedGameCtx.strokeText(label, 0, 0);
+          cachedGameCtx.fillText(label, 0, 0);
+          cachedGameCtx.restore();
+        }
+      }
+
+      cachedGameCtx.restore();
+
+      // Aro externo
+      cachedGameCtx.beginPath();
+      cachedGameCtx.arc(gcx, gcy, gR, 0, 2 * Math.PI);
+      cachedGameCtx.strokeStyle = '#cbd5e1';
+      cachedGameCtx.lineWidth = 5;
+      cachedGameCtx.stroke();
+    }
+
+    // =========================================================================
+    // DESENHO DA ROLETA DE JOGOS
+    // =========================================================================
+    function drawGames() {
+      offGameCtx.clearRect(0, 0, 1000, 1000);
+
+      offGameCtx.save();
+      offGameCtx.translate(gcx, gcy);
+      offGameCtx.rotate(grot);
+      offGameCtx.drawImage(cachedGameCanvas, -gcx, -gcy);
+      offGameCtx.restore();
+
+      // Miolo branco limpo (raio 52)
+      offGameCtx.beginPath();
+      offGameCtx.arc(gcx, gcy, 52, 0, 2 * Math.PI);
+      offGameCtx.fillStyle = '#ffffff';
+      offGameCtx.fill();
+      offGameCtx.strokeStyle = '#cbd5e1';
+      offGameCtx.lineWidth = 3.5;
+      offGameCtx.stroke();
+
+      blitToDisplay(gcCanvas, gctx, offGame);
+    }
+
+    function getGameSector() {
+      const n = games.length;
+      if (!n) return 0;
+      const step = 2 * Math.PI / n;
+      const a = (((-grot) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      return Math.floor(a / step) % n;
+    }
+
+    // =========================================================================
+    // EXIBIÇÃO DO JOGO (SEM O TEXTO DO ANO DE LANÇAMENTO)
+    // =========================================================================
+    function showGame(i, isSpin = false) {
+      selectedGameIndex = i;
+      const g = games[i];
+      if (!g) return;
+
+      document.getElementById('gameName').textContent = g.name;
+      document.getElementById('gameMeta').textContent = '';
+
+      const box = document.getElementById('gameResultBox');
+      box.classList.remove('highlight');
+      void box.offsetWidth;
+      box.classList.add('highlight');
+
+      const img = document.getElementById('gameCover');
+      const placeholder = document.getElementById('coverPlaceholder');
+
+      if (g.cover) {
+        img.src = g.cover;
+        img.style.display = 'block';
+        placeholder.style.display = 'none';
+        img.onerror = () => {
+          img.style.display = 'none';
+          placeholder.style.display = 'flex';
+        };
+      } else {
+        img.style.display = 'none';
+        placeholder.style.display = 'flex';
+      }
+
+      if (isSpin) {
+        gameBoom.explode(40);
+        beep(523, 0.09, 'sine');
+        setTimeout(() => beep(659, 0.09, 'sine'), 80);
+        setTimeout(() => beep(783, 0.12, 'sine'), 160);
+        setTimeout(() => beep(1046, 0.22, 'sine'), 250);
+
+        showWinnerPopup('Game', g.name, '');
+      }
+
+      renderGameList(document.getElementById('qGame').value);
+    }
+
+    // =========================================================================
+    // GIRO DE JOGOS (DEFORMAÇÃO ELÁSTICA SUTIL E DESACELERAÇÃO SUAVE)
+    // Duração: 3,7 segundos (exatamente 0,5s mais curta que a de consoles)
+    // =========================================================================
+    const GAME_SPIN_DURATION = CONSOLE_SPIN_DURATION - 500; // 3700ms
+
+    function spinGames() {
+      if (gBusy || games.length < 2) return;
+      gBusy = true;
+      getAudioCtx();
+      document.getElementById('gameSpin').disabled = true;
+
+      document.getElementById('winnerModalGame').classList.remove('show');
+
+      const wheelWrap = document.getElementById('wheelWrapperGame');
+      wheelWrap.classList.remove('wheel-jiggle');
+
+      const p = document.getElementById('gamePointer');
+      p.style.transform = 'translateX(-50%) rotate(0deg)';
+
+      const duration = GAME_SPIN_DURATION;
+      const startAngle = grot;
+      const turns = 4.5 + Math.random() * 2.0;
+      const totalDelta = turns * 2 * Math.PI + Math.random() * 2 * Math.PI;
+      const startTime = performance.now();
+      let lastSector = getGameSector();
+      let lastBeepTime = 0;
+
+      function frame(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(1, elapsed / duration);
+        const progress = 1 - Math.pow(1 - t, 2.3);
+        grot = startAngle + totalDelta * progress;
+        const speed = Math.max(0, Math.pow(1 - t, 1.3));
+
+        drawGames();
+
+        // Deformação elástica sutil e orgânica
+        if (isWobbleActive) {
+          const wobbleAngle = Math.sin(elapsed * 0.016) * (0.85 * speed);
+          const squishX = 1 + Math.sin(elapsed * 0.026) * (0.009 * speed);
+          const squishY = 1 - Math.sin(elapsed * 0.026) * (0.009 * speed);
+          wheelWrap.style.transform = 'scale(' + squishX + ',' + squishY + ') rotate(' + wobbleAngle + 'deg)';
+        }
+
+        const sector = getGameSector();
+
+        if (sector !== lastSector) {
+          lastSector = sector;
+          const kick = Math.min(6, 2.5 + 4 * speed);
+          p.style.transform = 'translateX(-50%) rotate(-' + kick + 'deg)';
+          setTimeout(() => {
+            p.style.transform = 'translateX(-50%) rotate(0deg)';
+          }, 45);
+
+          if (now - lastBeepTime >= 40) {
+            lastBeepTime = now;
+            beep(190 + Math.min(500, speed * 600), 0.035);
+          }
+        }
+
+        if (t < 1) {
+          requestAnimationFrame(frame);
+          return;
+        }
+
+        drawGames();
+
+        setTimeout(() => {
+          if (isWobbleActive) {
+            wheelWrap.style.transform = '';
+            wheelWrap.classList.remove('wheel-jiggle');
+            void wheelWrap.offsetWidth;
+            wheelWrap.classList.add('wheel-jiggle');
+          }
+
+          p.classList.remove('pointer-jiggle');
+          void p.offsetWidth;
+          p.classList.add('pointer-jiggle');
+
+          showGame(getGameSector(), true);
+          gBusy = false;
+          document.getElementById('gameSpin').disabled = false;
+        }, 80);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    // ==================== CARREGAMENTO DE JOGOS ====================
+    async function loadGamesFor(consoleName) {
+      document.getElementById('gameConsole').textContent = consoleName;
+      document.getElementById('gameStatus').textContent = 'Carregando jogos...';
+      games = [];
+      grot = 0;
+      selectedGameIndex = -1;
+
+      document.getElementById('gameName').textContent = '—';
+      document.getElementById('gameMeta').textContent = 'Gire a roleta de jogos ou selecione na lista abaixo';
+
+      const img = document.getElementById('gameCover');
+      const placeholder = document.getElementById('coverPlaceholder');
+      if (img) img.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'flex';
+
+      const generated = (window.GAME_DATA || {})[consoleName];
+      if (generated && generated.length) {
+        games = gameObjects(generated);
+        document.getElementById('gameStatus').textContent = games.length + ' jogos disponíveis';
+      } else {
+        games = [];
+        document.getElementById('gameStatus').textContent = 'Nenhum jogo no catálogo local';
+      }
+
+      document.getElementById('gameCount').textContent = games.length + ' jogos';
+      document.getElementById('gameSpin').disabled = games.length < 2;
+
+      buildGameWheelSprite();
+      drawGames();
+      renderGameList();
+    }
+
+    // ==================== LISTA DE JOGOS (SEM ANO DE LANÇAMENTO) ====================
+    let gameListTimer = null;
+    function renderGameList(q = '') {
+      clearTimeout(gameListTimer);
+      gameListTimer = setTimeout(() => {
+        const listEl = document.getElementById('gameList');
+        if (!listEl) return;
+
+        if (!games || games.length === 0) {
+          listEl.innerHTML = '<div class="empty-message">Nenhum jogo disponível para este console.</div>';
+          return;
+        }
+
+        const query = q.toLowerCase();
+        let htmlStr = '';
+        let matches = 0;
+
+        for (let i = 0; i < games.length; i++) {
+          const g = games[i];
+          if (g.name.toLowerCase().includes(query)) {
+            matches++;
+            const isSelected = selectedGameIndex === i;
+            htmlStr += '<div class="item-row ' + (isSelected ? 'active' : '') + '" data-index="' + i + '">'
+              + '<span class="item-index">' + (i + 1) + '.</span>'
+              + '<span class="item-title">' + g.name + '</span>'
+              + '</div>';
+          }
+        }
+
+        if (matches === 0) {
+          htmlStr = '<div class="empty-message">Nenhum jogo encontrado com esse filtro.</div>';
+        }
+        listEl.innerHTML = htmlStr;
+      }, 20);
+    }
+
+    // ==================== EVENT DELEGATION OTIMIZADO ====================
+    document.getElementById('list').onclick = e => {
+      if (e.target.matches('.console-checkbox') || e.target.closest('.console-check-wrap')) {
+        e.stopPropagation();
+        const checkbox = e.target.matches('.console-checkbox') ? e.target : e.target.closest('.console-check-wrap').querySelector('.console-checkbox');
+        if (checkbox) {
+          const name = checkbox.getAttribute('data-name');
+          toggleConsole(name);
+        }
+        return;
+      }
+
+      const row = e.target.closest('.item-row');
+      if (!row) return;
+      const name = row.getAttribute('data-name');
+      const maker = row.getAttribute('data-maker');
+      const era = row.getAttribute('data-era');
+      if (name) {
+        selectConsole(name, maker, era, false);
+        showWinnerPopup('Console', name, maker + (era ? ' • ' + era : ''));
+      }
+    };
+
+    document.getElementById('gameList').onclick = e => {
+      const row = e.target.closest('.item-row');
+      if (!row) return;
+      const idx = parseInt(row.getAttribute('data-index'), 10);
+      if (!isNaN(idx)) {
+        showGame(idx, false);
+        const g = games[idx];
+        if (g) {
+          showWinnerPopup('Game', g.name, '');
+        }
+      }
+    };
+
+    // ==================== EVENTOS E INICIALIZAÇÃO ====================
+    document.getElementById('spin').onclick = spin;
+    document.getElementById('gameSpin').onclick = spinGames;
+    document.getElementById('q').oninput = e => render(e.target.value);
+    document.getElementById('qGame').oninput = e => renderGameList(e.target.value);
+    document.getElementById('toggleAllConsoles').onclick = toggleAllConsoles;
+
+    // Alternar filtro pixelizado (com ícone SVG mantido)
+    document.getElementById('pixelBtn').onclick = () => {
+      isPixelated = !isPixelated;
+      document.getElementById('pixelStatus').textContent = isPixelated ? 'ON' : 'OFF';
+      const canvases = [cCanvas, gcCanvas];
+      canvases.forEach(canv => {
+        if (isPixelated) canv.classList.add('pixel-render');
+        else canv.classList.remove('pixel-render');
+      });
+      draw();
+      drawGames();
+    };
+
+    // Alternar efeito orgânico wobbly/jiggle
+    document.getElementById('wobbleBtn').onclick = () => {
+      isWobbleActive = !isWobbleActive;
+      document.getElementById('wobbleStatus').textContent = isWobbleActive ? 'ON' : 'OFF';
+      const wElements = [
+        document.getElementById('wheelWrapperConsole'),
+        document.getElementById('wheelWrapperGame'),
+        document.getElementById('spin'),
+        document.getElementById('gameSpin')
+      ];
+      wElements.forEach(el => {
+        if (el) {
+          if (isWobbleActive) el.classList.add('wobbly-filter');
+          else {
+            el.classList.remove('wobbly-filter');
+            el.style.transform = '';
+          }
+        }
+      });
+    };
+
+    document.getElementById('full').onclick = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    };
+
+    // Alternar som com troca dinâmica de ícone SVG (Speaker / Muted)
+    document.getElementById('snd').onclick = () => {
+      sound = !sound;
+      document.getElementById('sndStatus').textContent = sound ? 'ON' : 'OFF';
+      const iconWrap = document.getElementById('sndIconWrap');
+      if (iconWrap) {
+        if (sound) {
+          iconWrap.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+        } else {
+          iconWrap.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+        }
+      }
+    };
+
+    document.getElementById('reset').onclick = () => {
+      rot = 0;
+      grot = 0;
+      selectedConsoleName = null;
+      selectedGameIndex = -1;
+      games = [];
+
+      document.getElementById('winnerModalConsole').classList.remove('show');
+      document.getElementById('winnerModalGame').classList.remove('show');
+
+      document.getElementById('name').textContent = '—';
+      document.getElementById('maker').textContent = 'Gire a roleta de consoles';
+      document.getElementById('gameConsole').textContent = '—';
+      document.getElementById('gameStatus').textContent = 'Aguardando sorteio de console...';
+      document.getElementById('gameName').textContent = '—';
+      document.getElementById('gameMeta').textContent = 'Gire a roleta de jogos';
+      document.getElementById('gameCover').style.display = 'none';
+      document.getElementById('coverPlaceholder').style.display = 'flex';
+      document.getElementById('gameCount').textContent = '0 jogos';
+      document.getElementById('gameSpin').disabled = true;
+
+      buildGameWheelSprite();
+      draw();
+      drawGames();
+      render();
+      renderGameList();
+    };
+
+    // Inicialização da interface
+    updateActiveConsoles();
+    buildConsoleWheelSprite();
+    buildGameWheelSprite();
+    render();
+    draw();
+    drawGames();
+  </script>
+</body>
+</html>
