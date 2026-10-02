@@ -967,8 +967,6 @@
       cursor: pointer;
       user-select: none;
       z-index: 10;
-      perspective: 400px;
-      transform-style: preserve-3d;
     }
 
     .slot-lever-socket {
@@ -981,6 +979,7 @@
       border: 2px solid #0f172a;
       border-radius: 4px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      z-index: 2;
     }
 
     .slot-lever-arm {
@@ -989,14 +988,7 @@
       left: 8px;
       width: 28px;
       height: 140px;
-      transform-origin: 3px 138px;
-      transform-style: preserve-3d;
-      transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .slot-lever-arm.pulled {
-      transform: rotateX(-65deg);
-      transition: transform 0.12s ease-in;
+      z-index: 1;
     }
 
     .slot-lever-shaft {
@@ -1008,6 +1000,8 @@
       background: linear-gradient(to right, #cbd5e1, #94a3b8, #475569);
       border: 1.5px solid #0f172a;
       border-radius: 3px;
+      transform-origin: center bottom;
+      transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .slot-lever-knob {
@@ -1024,12 +1018,18 @@
     }
 
     .slot-lever-assembly:hover .slot-lever-knob {
-      transform: scale(1.08);
+      transform: translateY(0) scale(1.08);
     }
 
-    .slot-lever-arm.pulled .slot-lever-knob {
-      transform: rotateX(65deg) scale(1.08);
-      box-shadow: 0 16px 20px rgba(15, 23, 42, 0.55), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+    .slot-lever-arm.pulled .slot-lever-shaft {
+      transform: scaleY(0.35);
+      transition: transform 0.12s ease-in;
+    }
+
+    .slot-lever-arm.pulled .slot-lever-knob,
+    .slot-lever-assembly:hover .slot-lever-arm.pulled .slot-lever-knob {
+      transform: translateY(81px) scale(1.06);
+      box-shadow: 0 8px 14px rgba(15, 23, 42, 0.5), inset 0 2px 3px rgba(255, 255, 255, 0.35);
       transition: transform 0.12s ease-in, box-shadow 0.12s ease-in;
     }
 
