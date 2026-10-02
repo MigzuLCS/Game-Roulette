@@ -795,39 +795,26 @@
       justify-content: space-between;
     }
 
-    /* Indicadores de Linha de Pagamento (Payline) */
-    .slot-payline-bar {
+    /* Marcadores em diamante nas extremidades de cada bobina (Payline) */
+    .reel-diamond {
       position: absolute;
-      top: calc(50% + 15px);
-      left: -4px;
-      right: -4px;
-      height: 60px;
+      top: 50%;
       transform: translateY(-50%);
-      pointer-events: none;
-      z-index: 5;
-      border-top: 1.5px dashed rgba(202, 138, 4, 0.6);
-      border-bottom: 1.5px dashed rgba(202, 138, 4, 0.6);
-      background: rgba(254, 240, 138, 0.08);
-    }
-
-    .slot-payline-marker {
-      position: absolute;
-      top: calc(50% + 15px);
-      transform: translateY(-50%);
-      font-size: 16px;
-      color: #ca8a04;
+      font-size: 12px;
+      color: #475569;
       z-index: 8;
       pointer-events: none;
-      font-weight: 900;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      line-height: 1;
+      user-select: none;
+      filter: drop-shadow(0 1px 1px rgba(255,255,255,0.7));
     }
 
-    .slot-payline-marker.left {
-      left: -14px;
+    .reel-diamond-left {
+      left: 4px;
     }
 
-    .slot-payline-marker.right {
-      right: -14px;
+    .reel-diamond-right {
+      right: 4px;
     }
 
     /* Bobinas (Reels) individuais */
@@ -980,7 +967,7 @@
       left: 0;
       width: 6px;
       height: 124px;
-      background: linear-gradient(to right, #e2e8f0, #94a3b8, #64748b);
+      background: linear-gradient(to right, #cbd5e1, #94a3b8, #475569);
       border: 1.5px solid #0f172a;
       border-radius: 3px;
     }
@@ -991,10 +978,10 @@
       left: -14px;
       width: 34px;
       height: 34px;
-      background: radial-gradient(circle at 35% 35%, #ef4444, #991b1b 80%);
-      border: 2px solid #0f172a;
+      background: radial-gradient(circle at 32% 32%, #64748b 0%, #334155 45%, #1e293b 85%, #0f172a 100%);
+      border: 2.2px solid #0f172a;
       border-radius: 50%;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 8px rgba(15, 23, 42, 0.4), inset 0 2px 3px rgba(255, 255, 255, 0.25);
       transition: transform 0.1s;
     }
 
@@ -1098,31 +1085,6 @@
       border-color: #facc15;
       color: #0f172a;
       font-weight: 700;
-    }
-
-    .btn-slot-apply {
-      background: #ffffff;
-      color: #0f172a;
-      border: 1.5px solid #0f172a;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform 0.1s, background-color 0.15s;
-      box-shadow: 0 2px 0 #0f172a;
-      margin-top: 2px;
-    }
-
-    .btn-slot-apply:hover {
-      background: #f1f5f9;
-    }
-
-    .btn-slot-apply:active {
-      transform: translateY(1px);
     }
 
     /* Bandeja Inferior de Moedas (Coin Tray) */
@@ -1426,15 +1388,12 @@
           <!-- ÁREA DAS 3 BOBINAS (REELS) COM A ALAVANCA AO LADO -->
           <div class="slot-middle-row">
             <div class="slot-reels-container">
-              <!-- LINHA GUIA CENTRAL (PAYLINE) COM MARCADORES EM DIAMANTE -->
-              <div class="slot-payline-marker left">◆</div>
-              <div class="slot-payline-marker right">◆</div>
-              <div class="slot-payline-bar"></div>
-
               <!-- BOBINA 1: CONSOLE -->
               <div class="slot-reel-box" id="reelBoxConsole">
                 <div class="slot-reel-header">Console</div>
                 <div class="slot-reel-viewport">
+                  <div class="reel-diamond reel-diamond-left">◆</div>
+                  <div class="reel-diamond reel-diamond-right">◆</div>
                   <div class="slot-cylinder-shadow-top"></div>
                   <div class="slot-reel-strip" id="reelStripConsole"></div>
                   <div class="slot-cylinder-shadow-bottom"></div>
@@ -1446,6 +1405,8 @@
               <div class="slot-reel-box" id="reelBoxGame">
                 <div class="slot-reel-header">Jogo</div>
                 <div class="slot-reel-viewport">
+                  <div class="reel-diamond reel-diamond-left">◆</div>
+                  <div class="reel-diamond reel-diamond-right">◆</div>
                   <div class="slot-cylinder-shadow-top"></div>
                   <div class="slot-reel-strip" id="reelStripGame"></div>
                   <div class="slot-cylinder-shadow-bottom"></div>
@@ -1457,6 +1418,8 @@
               <div class="slot-reel-box" id="reelBoxDuration">
                 <div class="slot-reel-header">Duração</div>
                 <div class="slot-reel-viewport">
+                  <div class="reel-diamond reel-diamond-left">◆</div>
+                  <div class="reel-diamond reel-diamond-right">◆</div>
                   <div class="slot-cylinder-shadow-top"></div>
                   <div class="slot-reel-strip" id="reelStripDuration"></div>
                   <div class="slot-cylinder-shadow-bottom"></div>
@@ -2840,19 +2803,32 @@
       // 3. Sorteia a Duração vencedora (dentre as 6 opções solicitadas)
       const winDuration = DURATION_OPTIONS[Math.floor(Math.random() * DURATION_OPTIONS.length)];
 
-      // Inicia ticks mecânicos rítmicos de rotação
-      let tickCount = 0;
-      clearInterval(slotTickerInterval);
-      slotTickerInterval = setInterval(() => {
-        tickCount++;
-        beep(560 + Math.random() * 180, 0.015, 'triangle');
-        if (tickCount > 35) clearInterval(slotTickerInterval);
-      }, 75);
+      // Inicia ticks mecânicos rítmicos de rotação que desaceleram junto com as bobinas
+      let spinStartTime = performance.now();
+      let slotTickerTimeout = null;
+      function scheduleSlotTick() {
+        if (!slotBusy) return;
+        const elapsed = performance.now() - spinStartTime;
+        if (elapsed > DURATION_REEL_3) return;
+
+        beep(560 + Math.random() * 140, 0.012, 'triangle');
+        let nextDelay = 45;
+        if (elapsed < 2500) {
+          nextDelay = 45 + (elapsed / 2500) * 40; // 45ms a 85ms
+        } else if (elapsed < 4000) {
+          nextDelay = 85 + ((elapsed - 2500) / 1500) * 80; // 85ms a 165ms
+        } else {
+          nextDelay = 165 + ((elapsed - 4000) / 1400) * 110; // 165ms a 275ms
+        }
+        slotTickerTimeout = setTimeout(scheduleSlotTick, nextDelay);
+      }
+      clearTimeout(slotTickerTimeout);
+      slotTickerTimeout = setTimeout(scheduleSlotTick, 50);
 
       // --- CONFIGURAÇÃO DA BOBINA 1 (CONSOLE) ---
       const stripConsole = document.getElementById('reelStripConsole');
       const boxConsole = document.getElementById('reelBoxConsole');
-      const countConsole = 26;
+      const countConsole = 46;
       const consoleItems = [];
       for (let i = 0; i < countConsole; i++) {
         if (i === countConsole - 2) {
@@ -2870,7 +2846,7 @@
       // --- CONFIGURAÇÃO DA BOBINA 2 (JOGO) ---
       const stripGame = document.getElementById('reelStripGame');
       const boxGame = document.getElementById('reelBoxGame');
-      const countGame = 34;
+      const countGame = 54;
       const gameItems = [];
       for (let i = 0; i < countGame; i++) {
         if (i === countGame - 2) {
@@ -2892,7 +2868,7 @@
       // --- CONFIGURAÇÃO DA BOBINA 3 (DURAÇÃO) ---
       const stripDuration = document.getElementById('reelStripDuration');
       const boxDuration = document.getElementById('reelBoxDuration');
-      const countDuration = 42;
+      const countDuration = 62;
       const durationItems = [];
       for (let i = 0; i < countDuration; i++) {
         if (i === countDuration - 2) {
@@ -2907,50 +2883,51 @@
       stripDuration.style.transform = 'translateY(0px)';
       void stripDuration.offsetWidth;
 
-      // Executa giros com desaceleração escalonada (1.9s, 2.6s, 3.3s)
-      const DURATION_REEL_1 = 1900;
-      const DURATION_REEL_2 = 2600;
-      const DURATION_REEL_3 = 3300;
+      // Giros com duração de 4 segundos e desaceleração suave e escalonada (4.0s, 4.7s, 5.4s)
+      const DURATION_REEL_1 = 4000;
+      const DURATION_REEL_2 = 4700;
+      const DURATION_REEL_3 = 5400;
+      const SMOOTH_EASING = 'cubic-bezier(0.18, 0.98, 0.28, 1)';
 
       const targetYConsole = -((countConsole - 2 - 1) * 60);
       const targetYGame = -((countGame - 2 - 1) * 60);
       const targetYDuration = -((countDuration - 2 - 1) * 60);
 
-      stripConsole.style.transition = `transform ${DURATION_REEL_1}ms cubic-bezier(0.12, 0.8, 0.15, 1.04)`;
+      stripConsole.style.transition = `transform ${DURATION_REEL_1}ms ${SMOOTH_EASING}`;
       stripConsole.style.transform = `translateY(${targetYConsole}px)`;
 
-      stripGame.style.transition = `transform ${DURATION_REEL_2}ms cubic-bezier(0.12, 0.8, 0.15, 1.04)`;
+      stripGame.style.transition = `transform ${DURATION_REEL_2}ms ${SMOOTH_EASING}`;
       stripGame.style.transform = `translateY(${targetYGame}px)`;
 
-      stripDuration.style.transition = `transform ${DURATION_REEL_3}ms cubic-bezier(0.12, 0.8, 0.15, 1.04)`;
+      stripDuration.style.transition = `transform ${DURATION_REEL_3}ms ${SMOOTH_EASING}`;
       stripDuration.style.transform = `translateY(${targetYDuration}px)`;
 
-      // Parada da Bobina 1 (Console)
+      // Parada suave da Bobina 1 (Console - 4.0s)
       setTimeout(() => {
-        beep(220, 0.08, 'square');
+        beep(220, 0.07, 'square');
         if (boxConsole) {
           boxConsole.classList.remove('reel-snap');
           void boxConsole.offsetWidth;
           boxConsole.classList.add('reel-snap');
         }
-        spawnSlotCoins(6);
+        spawnSlotCoins(5);
       }, DURATION_REEL_1);
 
-      // Parada da Bobina 2 (Jogo)
+      // Parada suave da Bobina 2 (Jogo - 4.7s)
       setTimeout(() => {
-        beep(330, 0.08, 'square');
+        beep(330, 0.07, 'square');
         if (boxGame) {
           boxGame.classList.remove('reel-snap');
           void boxGame.offsetWidth;
           boxGame.classList.add('reel-snap');
         }
-        spawnSlotCoins(8);
+        spawnSlotCoins(6);
       }, DURATION_REEL_2);
 
-      // Parada da Bobina 3 (Duração) e Finalização
+      // Parada suave da Bobina 3 (Duração - 5.4s) e Celebração Final
       setTimeout(() => {
-        clearInterval(slotTickerInterval);
-        beep(440, 0.1, 'square');
+        clearTimeout(slotTickerTimeout);
+        beep(440, 0.09, 'square');
         if (boxDuration) {
           boxDuration.classList.remove('reel-snap');
           void boxDuration.offsetWidth;
@@ -2966,7 +2943,7 @@
         // Grande explosão de moedas saltando!
         spawnSlotCoins(36);
 
-        // Exibe o resultado final com botão para carregar na roleta
+        // Exibe o resultado final com tags elegantes (sem botão redundante)
         if (displayPanel) displayPanel.classList.add('winner-glow');
         if (displayText) {
           displayText.innerHTML = `
@@ -2975,33 +2952,12 @@
               <span class="slot-tag slot-tag-game" title="${winGame.name}">🕹️ ${winGame.name}</span>
               <span class="slot-tag slot-tag-duration">⏱️ ${winDuration}</span>
             </div>
-            <button type="button" class="btn-slot-apply" onclick="loadSlotGameToRoulette('${winConsole.name.replace(/'/g, "\\'")}', '${winGame.name.replace(/'/g, "\\'")}')">
-              Carregar este jogo na roleta ↑
-            </button>
           `;
         }
 
         slotBusy = false;
         if (btn) btn.disabled = false;
-      }, DURATION_REEL_3 + 40);
-    }
-
-    // Carrega o jogo sorteado na roleta principal
-    function loadSlotGameToRoulette(consoleName, gameName) {
-      const consoleItem = ALL_CONSOLES.find(c => c.name === consoleName);
-      if (consoleItem) {
-        selectConsole(consoleItem.name, consoleItem.maker, consoleItem.era, false);
-        const cGames = (window.GAME_DATA && window.GAME_DATA[consoleName]) || [];
-        const gIdx = cGames.findIndex(g => g.name === gameName);
-        if (gIdx >= 0) {
-          showGame(gIdx, false);
-          showWinnerPopup('Game', gameName, '');
-        }
-      }
-      const targetSec = document.getElementById('gameCard');
-      if (targetSec) {
-        targetSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      }, DURATION_REEL_3 + 30);
     }
 
     function resetSlotMachine() {
