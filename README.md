@@ -1,48 +1,59 @@
-# 🎮 Game Roulette — Consoles & Jogos
+# 🎰 Game Roulette v30
 
-Sorteador interativo de consoles e jogos retrô clássicos com roleta dupla, física mecânica de rotação suave, efeitos de rascunho (*line-boil*), filtro pixelizado e catálogo local com 39 consoles e centenas de jogos.
-
----
-
-## 🚀 Como Hospedar no GitHub Pages
-
-Este repositório já está 100% configurado para funcionar diretamente no **GitHub Pages**:
-
-1. Crie um novo repositório no seu GitHub (exemplo: `game-roulette`).
-2. Faça o upload ou envie os arquivos deste projeto via Git:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: Game Roulette v30"
-   git branch -M main
-   git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-   git push -u origin main
-   ```
-3. No seu repositório no GitHub, clique na aba **Settings** (Configurações).
-4. No menu lateral esquerdo, clique em **Pages**.
-5. Na seção **Build and deployment** > **Branch**:
-   - Selecione a branch `main` (ou `master`).
-   - Mantenha a pasta `/ (root)`.
-   - Clique em **Save**.
-6. Em cerca de 1 minuto, o link do seu site estará disponível no topo da página:
-   `https://SEU_USUARIO.github.io/SEU_REPOSITORIO/`
+> Uma aplicação web interativa, responsiva e nostálgica projetada para sorteio de plataformas e jogos clássicos através de uma experiência imersiva com animações, efeitos pixelados em tempo real e física suave.
 
 ---
 
-## 🕹️ Execução Local
+## 🎮 Sobre o Projeto
 
-Você também pode utilizar o aplicativo offline no seu computador sem precisar de internet ou servidor:
-
-- **Opção 1 (Navegador):** Dê um duplo clique no arquivo `index.html`.
-- **Opção 2 (Executável Windows):** Dê um duplo clique em `Game_Roulette_v30.exe` para abrir a roleta em janela dedicada.
+O **Game Roulette** resolve o clássico dilema: *"o que jogar agora?"*. O sistema opera em duas etapas integradas:
+1. **Roleta de Plataformas / Consoles**: Escolhe dinamicamente entre dezenas de gerações e sistemas (Nintendo, PlayStation, Xbox, Sega, Atari, PC, etc.).
+2. **Roleta de Jogos Dedicada**: Após o sorteio do console, carrega instantaneamente a biblioteca local correspondente e sorteia um jogo daquele acervo, com exibição de capa, ano de lançamento e feedback visual comemorativo.
 
 ---
 
-## ✨ Recursos
+## ✨ Principais Funcionalidades
 
-- **Roleta Dupla Sincronizada:** Sorteia primeiro o console e carrega imediatamente o catálogo de jogos correspondente para o segundo sorteio.
-- **Seleção Personalizada de Consoles:** Caixas de seleção individuais para escolher exatamente quais plataformas participam da roleta, com persistência automática no cache do navegador (`localStorage`).
-- **Alta Performance:** Sistema de *Sprite Caching* que mantém 60–144 FPS contínuos mesmo em roletas com mais de 100 jogos.
-- **Física Mecânica Calibrada:** Desaceleração suave e orgânica com suspense no último segundo.
-- **Filtro Pixelizado & Efeito Orgânico Wobble:** Alternáveis em tempo real por botões dedicados com ícones vetoriais em SVG.
-- **100% Offline-First:** Toda a base de dados reside localmente em `game_data.js` via API IGDB.
+- **Motor de Renderização em HTML5 Canvas**: Desenho em tempo real das roletas com física angular contínua, desaceleração realista e indicador (*pointer*) interativo com retorno tátil visual.
+- **Efeitos Visuais Retrô Procedurais**:
+  - Partículas de explosão estilo 8-bit/pixel art geradas diretamente via Canvas sobreposto ao cair no resultado.
+  - Badge central comemorativa com tipografia arcade saltando em animação de impacto (*screen pop*).
+- **Áudio Sintetizado Nativo**: Efeitos sonoros mecânicos e melodias de vitória usando **Web Audio API** (`OscillatorNode`), sem dependência de arquivos de áudio pesados e com gerenciamento otimizado de memória.
+- **Catálogo Offline / Autocontido**: O banco de dados de títulos (`game_data.js`) é carregado localmente, permitindo execução instantânea sem necessidade de servidores ou APIs externas ativas.
+- **Interface Responsiva**: Layout modular com suporte a tela cheia, pesquisa instantânea de consoles com debounce e paleta visual futurista dark/cyberpunk.
+
+---
+
+## 🚀 Como Executar
+
+### Opção 1: Diretamente no Navegador (Web)
+Basta abrir o arquivo `index.html` em qualquer navegador moderno (Chrome, Firefox, Edge, Safari):
+- Dê um duplo clique em `index.html`, ou
+- Acesse via GitHub Pages oficial do repositório.
+
+### Opção 2: Executável Desktop
+Para Windows, você pode executar diretamente o `Game_Roulette_v30.exe` incluso no repositório.
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+- **HTML5** (Semântica estrutural e camadas de Canvas 2D)
+- **CSS3 Moderno** (Grid, Flexbox, Glassmorphism, Keyframes e Variáveis CSS)
+- **JavaScript Puro (Vanilla JS - ES6+)** (Física da roleta, controle de eventos e manipulação de estado)
+- **Web Audio API** (Sintetizador de som procedural)
+
+---
+
+## 📄 Licença
+
+Este projeto é protegido sob os termos de **Licença Proprietária e Direitos Autorais** (*Proprietary License and Copyright Notice*).
+
+```text
+Copyright (c) 2026 MigzuLCS. Todos os direitos reservados.
+All Rights Reserved.
+```
+
+É concedida permissão apenas para uso pessoal, recreativo e visualização através do repositório oficial. É expressamente proibida a cópia não autorizada, redistribuição, exploração comercial ou engenharia reversa sem o consentimento prévio e formal do autor.
+
+Consulte o arquivo [`LICENSE`](./LICENSE) completo para obter todos os detalhes e termos jurídicos.
